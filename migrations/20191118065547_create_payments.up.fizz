@@ -1,0 +1,9 @@
+create_table("payments") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("amount", "integer", {})
+	t.Column("description", "string", {null: true})
+	t.Column("room_occupancy_id", "uuid", {})
+	t.Timestamps()
+
+	t.ForeignKey("room_occupancy_id", {"room_occupancies": ["id"]}, {"on_delete": "cascade"})
+}

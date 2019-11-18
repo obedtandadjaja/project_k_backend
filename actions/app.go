@@ -62,6 +62,7 @@ func App() *buffalo.App {
 		app.Resource("/properties", PropertiesResource{})
 		app.Resource("/rooms", RoomsResource{})
 		app.Resource("/room_occupancies", RoomOccupanciesResource{})
+		app.Resource("/payments", PaymentsResource{})
 	}
 
 	return app
