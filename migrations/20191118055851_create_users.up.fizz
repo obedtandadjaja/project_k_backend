@@ -1,0 +1,13 @@
+create_table("users") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("name", "string", {})
+	t.Column("credential_id", "integer", {})
+	t.Column("email", "string", {})
+	t.Column("phone", "string", {null: true})
+	t.Column("notification_methods", "varchar[]", {})
+	t.Column("deactivated_at", "timestamp", {null: true})
+	t.Column("data", "jsonb", {})
+	t.Timestamps()
+}
+
+add_index("users", "email", {})
