@@ -4,7 +4,7 @@ create_table("rooms") {
 	t.Column("name", "string", {})
 	t.Column("price_amount", "integer", {})
 	t.Column("payment_schedule", "string", {})
-	t.Column("data", "jsonb", {})
+	t.Column("data", "jsonb", {"default": "{}"})
 	t.Timestamps()
 
 	t.ForeignKey("property_id", {"properties": ["id"]}, {"on_delete": "cascade"})

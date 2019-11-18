@@ -85,7 +85,7 @@ ALTER TABLE payments OWNER TO postgres;
 CREATE TABLE properties (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     name character varying(255) NOT NULL,
-    data jsonb NOT NULL,
+    data jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -120,7 +120,7 @@ CREATE TABLE rooms (
     name character varying(255) NOT NULL,
     price_amount integer NOT NULL,
     payment_schedule character varying(255) NOT NULL,
-    data jsonb NOT NULL,
+    data jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
