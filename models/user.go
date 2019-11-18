@@ -24,6 +24,7 @@ type User struct {
 	CreatedAt           time.Time     `json:"created_at" db:"created_at"`
 	UpdatedAt           time.Time     `json:"updated_at" db:"updated_at"`
 	Properties          []Property    `many_to_many:"user_property_relationships"`
+	Rooms               []Room        `many_to_many:"room_occupancies"`
 }
 
 // String is not required by pop and may be deleted
