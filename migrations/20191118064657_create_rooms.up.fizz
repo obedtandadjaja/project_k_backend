@@ -1,0 +1,11 @@
+create_table("rooms") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("property_id", "uuid", {})
+	t.Column("name", "string", {})
+	t.Column("price_amount", "integer", {})
+	t.Column("payment_schedule", "string", {})
+	t.Column("data", "jsonb", {})
+	t.Timestamps()
+
+	t.ForeignKey("property_id", {"properties": ["id"]}, {"on_delete": "cascade"})
+}
