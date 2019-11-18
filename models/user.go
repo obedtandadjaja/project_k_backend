@@ -2,25 +2,28 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/slices"
 	"github.com/gobuffalo/validate"
-	"github.com/gofrs/uuid"
-	"time"
 	"github.com/gobuffalo/validate/validators"
+	"github.com/gofrs/uuid"
 )
+
 type User struct {
-    ID uuid.UUID `json:"id" db:"id"`
-    Name string `json:"name" db:"name"`
-    CredentialID int `json:"credential_id" db:"credential_id"`
-    Email string `json:"email" db:"email"`
-    Phone nulls.String `json:"phone" db:"phone"`
-    NotificationMethods slices.String `json:"notification_methods" db:"notification_methods"`
-    DeactivatedAt nulls.Time `json:"deactivated_at" db:"deactivated_at"`
-    Data slices.Map `json:"data" db:"data"`
-    CreatedAt time.Time `json:"created_at" db:"created_at"`
-    UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	ID                  uuid.UUID     `json:"id" db:"id"`
+	Name                string        `json:"name" db:"name"`
+	CredentialID        int           `json:"credential_id" db:"credential_id"`
+	Email               string        `json:"email" db:"email"`
+	Phone               nulls.String  `json:"phone" db:"phone"`
+	NotificationMethods slices.String `json:"notification_methods" db:"notification_methods"`
+	DeactivatedAt       nulls.Time    `json:"deactivated_at" db:"deactivated_at"`
+	Data                slices.Map    `json:"data" db:"data"`
+	CreatedAt           time.Time     `json:"created_at" db:"created_at"`
+	UpdatedAt           time.Time     `json:"updated_at" db:"updated_at"`
+	Properties          []Property    `many_to_many:"user_property_relationships"`
 }
 
 // String is not required by pop and may be deleted
