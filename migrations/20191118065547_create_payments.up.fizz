@@ -1,5 +1,5 @@
 create_table("payments") {
-	t.Column("id", "uuid", {primary: true})
+	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("amount", "integer", {})
 	t.Column("description", "string", {null: true})
 	t.Column("room_occupancy_id", "uuid", {})

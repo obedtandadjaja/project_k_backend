@@ -15,7 +15,7 @@ import (
 type User struct {
 	ID                  uuid.UUID     `json:"id" db:"id"`
 	Name                string        `json:"name" db:"name"`
-	CredentialID        int           `json:"credential_id" db:"credential_id"`
+	CredentialUUID      uuid.UUID     `json:"credential_uuid" db:"credential_uuid"`
 	Email               string        `json:"email" db:"email"`
 	Phone               nulls.String  `json:"phone" db:"phone"`
 	NotificationMethods slices.String `json:"notification_methods" db:"notification_methods"`
@@ -48,7 +48,7 @@ func (u Users) String() string {
 func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: u.Name, Name: "Name"},
-		&validators.IntIsPresent{Field: u.CredentialID, Name: "CredentialID"},
+		&validators.UUIDIsPresent{Field: u.CredentialUUID, Name: "CredentialUUID"},
 		&validators.StringIsPresent{Field: u.Email, Name: "Email"},
 	), nil
 }

@@ -1,5 +1,5 @@
 create_table("rooms") {
-	t.Column("id", "uuid", {primary: true})
+	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("property_id", "uuid", {})
 	t.Column("name", "string", {})
 	t.Column("price_amount", "integer", {})

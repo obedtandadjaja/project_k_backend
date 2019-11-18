@@ -28,6 +28,34 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -39,7 +67,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE payments (
-    id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     amount integer NOT NULL,
     description character varying(255),
     room_occupancy_id uuid NOT NULL,
@@ -55,7 +83,7 @@ ALTER TABLE payments OWNER TO postgres;
 --
 
 CREATE TABLE properties (
-    id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     name character varying(255) NOT NULL,
     data jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -70,7 +98,7 @@ ALTER TABLE properties OWNER TO postgres;
 --
 
 CREATE TABLE room_occupancies (
-    id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     room_id uuid NOT NULL,
     terminated_at timestamp without time zone NOT NULL,
@@ -87,7 +115,7 @@ ALTER TABLE room_occupancies OWNER TO postgres;
 --
 
 CREATE TABLE rooms (
-    id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     property_id uuid NOT NULL,
     name character varying(255) NOT NULL,
     price_amount integer NOT NULL,
@@ -116,7 +144,7 @@ ALTER TABLE schema_migration OWNER TO postgres;
 --
 
 CREATE TABLE user_property_relationships (
-    id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     property_id uuid NOT NULL,
     type character varying(255) NOT NULL,
@@ -132,14 +160,14 @@ ALTER TABLE user_property_relationships OWNER TO postgres;
 --
 
 CREATE TABLE users (
-    id uuid NOT NULL,
+    id uuid DEFAULT uuid_generate_v4() NOT NULL,
     name character varying(255) NOT NULL,
-    credential_id integer NOT NULL,
+    credential_uuid uuid NOT NULL,
     email character varying(255) NOT NULL,
     phone character varying(255),
-    notification_methods character varying[] NOT NULL,
+    notification_methods character varying[] DEFAULT '{}'::character varying[] NOT NULL,
     deactivated_at timestamp without time zone,
-    data jsonb NOT NULL,
+    data jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

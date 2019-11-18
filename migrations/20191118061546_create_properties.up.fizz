@@ -1,5 +1,5 @@
 create_table("properties") {
-	t.Column("id", "uuid", {primary: true})
+	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("name", "string", {})
 	t.Column("data", "jsonb", {})
 	t.Timestamps()

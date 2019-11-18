@@ -1,12 +1,14 @@
+sql("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+
 create_table("users") {
-	t.Column("id", "uuid", {primary: true})
+	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("name", "string", {})
-	t.Column("credential_id", "integer", {})
+	t.Column("credential_uuid", "uuid", {})
 	t.Column("email", "string", {})
 	t.Column("phone", "string", {null: true})
-	t.Column("notification_methods", "varchar[]", {})
+	t.Column("notification_methods", "varchar[]", {"default": "{}"})
 	t.Column("deactivated_at", "timestamp", {null: true})
-	t.Column("data", "jsonb", {})
+	t.Column("data", "jsonb", {"default": "{}"})
 	t.Timestamps()
 }
 

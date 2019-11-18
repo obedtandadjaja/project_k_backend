@@ -1,5 +1,5 @@
 create_table("user_property_relationships") {
-	t.Column("id", "uuid", {primary: true})
+	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("user_id", "uuid", {})
 	t.Column("property_id", "uuid", {})
 	t.Column("type", "string", {})

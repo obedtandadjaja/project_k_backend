@@ -1,5 +1,5 @@
 create_table("room_occupancies") {
-	t.Column("id", "uuid", {primary: true})
+	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("user_id", "uuid", {})
 	t.Column("room_id", "uuid", {})
 	t.Column("terminated_at", "timestamp", {})
