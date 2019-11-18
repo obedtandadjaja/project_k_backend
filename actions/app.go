@@ -59,6 +59,7 @@ func App() *buffalo.App {
 
 		app.GET("/", HomeHandler)
 		app.Resource("/users", UsersResource{})
+		app.Resource("/properties", PropertiesResource{})
 	}
 
 	return app
