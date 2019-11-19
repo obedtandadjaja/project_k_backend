@@ -62,6 +62,7 @@ func App() *buffalo.App {
 		app.Resource("/api/v1/room_occupancies", RoomOccupanciesResource{})
 		app.Resource("/api/v1/payments", PaymentsResource{})
 		app.POST("/api/v1/users/signup", Signup)
+		app.POST("/api/v1/users/login", Login)
 	}
 
 	return app
