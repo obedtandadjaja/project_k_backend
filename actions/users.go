@@ -1,11 +1,15 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gofrs/uuid"
+	"github.com/obedtandadjaja/project_k_backend/clients"
+	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
@@ -58,12 +62,34 @@ func (v UsersResource) Create(c buffalo.Context) error {
 		return err
 	}
 
+	dummyPassword, _ := helpers.GenerateRandomString(15)
+	res, err := clients.NewAuthClient().CreateCredential(
+		&clients.CreateCredentialRequest{
+			Email:    user.Email,
+			Phone:    user.Phone.String,
+			Password: dummyPassword,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusCreated {
+		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
+	}
+
+	var resBody map[string]interface{}
+	json.NewDecoder(res.Body).Decode(&resBody)
+
+	credentialUUID, _ := uuid.FromString(resBody["credential_uuid"].(string))
+	user.CredentialUUID = credentialUUID
+
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
 	}
 
-	verrs, err := user.Validate(tx)
+	verrs, err := tx.ValidateAndCreate(user)
 	if err != nil {
 		return err
 	}
@@ -72,9 +98,6 @@ func (v UsersResource) Create(c buffalo.Context) error {
 		c.Set("errors", verrs)
 		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
-
-	// create credential here
-	// create user in DB here
 
 	return c.Render(http.StatusCreated, r.JSON(user))
 }
