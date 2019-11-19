@@ -2,7 +2,7 @@ sql("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
 
 create_table("users") {
 	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
-	t.Column("name", "string", {})
+	t.Column("name", "string", {null: true})
 	t.Column("credential_uuid", "uuid", {})
 	t.Column("email", "string", {})
 	t.Column("phone", "string", {null: true})
