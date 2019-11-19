@@ -58,8 +58,10 @@ func Signup(c buffalo.Context) error {
 
 	credentialUUID, _ := uuid.FromString(resBody["credential_uuid"].(string))
 	user := &models.User{
-		Email:          req.Email,
-		CredentialUUID: credentialUUID,
+		Email:               req.Email,
+		CredentialUUID:      credentialUUID,
+		NotificationMethods: []string{"email"},
+		Data:                make(map[string]interface{}),
 	}
 
 	err = tx.Create(user)

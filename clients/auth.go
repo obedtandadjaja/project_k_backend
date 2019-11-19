@@ -28,7 +28,7 @@ func NewAuthClient() *AuthClient {
 		AuthAPIPort:   envy.Get("AUTH_API_PORT", "3000"),
 		AuthAPIPrefix: envy.Get("AUTH_API_PREFIX", ""),
 		AuthAPIUrl: fmt.Sprintf(
-			"https://%s:%s%s/api/v1/verify_token",
+			"http://%s:%s%s",
 			envy.Get("AUTH_API_HOST", "localhost"),
 			envy.Get("AUTH_API_PORT", "3000"),
 			envy.Get("AUTH_API_PREFIX", ""),
@@ -49,7 +49,7 @@ func (authClient *AuthClient) CreateCredential(r *CreateCredentialRequest) (*htt
 	requestBody, err := json.Marshal(r)
 
 	res, err := http.Post(
-		authClient.AuthAPIUrl,
+		authClient.AuthAPIUrl+"/api/v1/credentials",
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
@@ -67,7 +67,7 @@ func (authClient *AuthClient) Login(r *LoginRequest) (*http.Response, error) {
 	requestBody, err := json.Marshal(r)
 
 	res, err := http.Post(
-		authClient.AuthAPIUrl,
+		authClient.AuthAPIUrl+"/api/v1/login",
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
@@ -84,7 +84,7 @@ func (authClient *AuthClient) Token(r *LoginRequest) (*http.Response, error) {
 	requestBody, err := json.Marshal(r)
 
 	res, err := http.Post(
-		authClient.AuthAPIUrl,
+		authClient.AuthAPIUrl+"/api/v1/token",
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
@@ -101,7 +101,7 @@ func (authClient *AuthClient) VerifyToken(r *LoginRequest) (*http.Response, erro
 	requestBody, err := json.Marshal(r)
 
 	res, err := http.Post(
-		authClient.AuthAPIUrl,
+		authClient.AuthAPIUrl+"/api/v1/verify_token",
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)

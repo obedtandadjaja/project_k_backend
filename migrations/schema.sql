@@ -161,7 +161,7 @@ ALTER TABLE user_property_relationships OWNER TO postgres;
 
 CREATE TABLE users (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    name character varying(255) NOT NULL,
+    name character varying(255),
     credential_uuid uuid NOT NULL,
     email character varying(255) NOT NULL,
     phone character varying(255),
