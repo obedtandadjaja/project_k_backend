@@ -14,9 +14,7 @@ import (
 	"github.com/rs/cors"
 )
 
-// ENV is used to help switch settings based on where the
-// application is being run. Default is "development".
-var ENV = envy.Get("GO_ENV", "development")
+var ENV = envy.Get("ENV", "development")
 var app *buffalo.App
 
 // App is where all routes and middleware for buffalo
@@ -63,6 +61,7 @@ func App() *buffalo.App {
 		app.Resource("/api/v1/rooms", RoomsResource{})
 		app.Resource("/api/v1/room_occupancies", RoomOccupanciesResource{})
 		app.Resource("/api/v1/payments", PaymentsResource{})
+		app.POST("/api/v1/users/signup", Signup)
 	}
 
 	return app
