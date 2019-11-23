@@ -65,7 +65,7 @@ func Login(c buffalo.Context) error {
 
 	user := &models.User{}
 	if err := tx.Where("credential_uuid = ?", resBody["credential_uuid"].(string)).First(user); err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return c.Error(http.StatusUnauthorized, err)
 	}
 
 	return c.Render(http.StatusCreated, r.JSON(

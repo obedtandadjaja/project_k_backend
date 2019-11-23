@@ -6,7 +6,6 @@ import (
 
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
-	"github.com/gobuffalo/validate/validators"
 	"github.com/gofrs/uuid"
 )
 
@@ -39,9 +38,7 @@ func (u UserPropertyRelationships) String() string {
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (u *UserPropertyRelationship) Validate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.Validate(
-		&validators.StringIsPresent{Field: u.Type, Name: "Type"},
-	), nil
+	return validate.Validate(), nil
 }
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.

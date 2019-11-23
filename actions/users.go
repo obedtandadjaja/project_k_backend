@@ -116,7 +116,7 @@ func (v UsersResource) Update(c buffalo.Context) error {
 
 	user := &models.User{}
 
-	if err := tx.Find(user, c.Param("user_id")); err != nil {
+	if err := tx.Eager("properties").Find(user, c.Param("user_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 

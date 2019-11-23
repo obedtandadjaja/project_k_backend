@@ -43,6 +43,8 @@ func (p Properties) String() string {
 func (p *Property) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: p.Name, Name: "Name"},
+		&validators.StringIsPresent{Field: p.Name, Name: "Type"},
+		&validators.StringIsPresent{Field: p.Name, Name: "Address"},
 	), nil
 }
 

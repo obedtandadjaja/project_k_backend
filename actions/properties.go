@@ -45,7 +45,7 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 
 	property := &models.Property{}
 
-	if err := tx.Find(property, c.Param("property_id")); err != nil {
+	if err := tx.Eager().Find(property, c.Param("property_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -55,13 +55,9 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 func (v PropertiesResource) Create(c buffalo.Context) error {
 	property := &models.Property{}
 
-	fmt.Println(property)
-
 	if err := c.Bind(property); err != nil {
-		fmt.Println(err)
 		return err
 	}
-
 	fmt.Println(property)
 
 	tx, ok := c.Value("tx").(*pop.Connection)
@@ -69,7 +65,7 @@ func (v PropertiesResource) Create(c buffalo.Context) error {
 		return fmt.Errorf("no transaction found")
 	}
 
-	verrs, err := tx.ValidateAndCreate(property)
+	verrs, err := tx.Eager().ValidateAndCreate(property)
 	if err != nil {
 		return err
 	}
@@ -98,7 +94,9 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 		return err
 	}
 
-	verrs, err := tx.ValidateAndUpdate(property)
+	fmt.Println(property)
+
+	verrs, err := tx.Eager().ValidateAndUpdate(property)
 	if err != nil {
 		return err
 	}

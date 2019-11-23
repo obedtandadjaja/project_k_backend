@@ -85,6 +85,8 @@ ALTER TABLE payments OWNER TO postgres;
 CREATE TABLE properties (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     name character varying(255) NOT NULL,
+    type character varying(255) NOT NULL,
+    address character varying(255) NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -147,7 +149,7 @@ CREATE TABLE user_property_relationships (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     property_id uuid NOT NULL,
-    type character varying(255) NOT NULL,
+    type character varying(255) DEFAULT 'owner'::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -162,7 +164,7 @@ ALTER TABLE user_property_relationships OWNER TO postgres;
 CREATE TABLE users (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     name character varying(255),
-    credential_uuid uuid NOT NULL,
+    credential_uuid uuid,
     email character varying(255) NOT NULL,
     phone character varying(255),
     notification_methods character varying[],
@@ -228,6 +230,13 @@ ALTER TABLE ONLY users
 --
 
 CREATE UNIQUE INDEX schema_migration_version_idx ON schema_migration USING btree (version);
+
+
+--
+-- Name: users_credential_uuid_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX users_credential_uuid_idx ON users USING btree (credential_uuid);
 
 
 --

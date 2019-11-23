@@ -62,13 +62,13 @@ func App() *buffalo.App {
 		app.Use(popmw.Transaction(models.DB))
 
 		app.GET("/", HomeHandler)
+		app.POST("/api/v1/signup", Signup)
+		app.POST("/api/v1/login", Login)
 		app.Resource("/api/v1/users", UsersResource{})
 		app.Resource("/api/v1/properties", PropertiesResource{})
 		app.Resource("/api/v1/rooms", RoomsResource{})
 		app.Resource("/api/v1/room_occupancies", RoomOccupanciesResource{})
 		app.Resource("/api/v1/payments", PaymentsResource{})
-		app.POST("/api/v1/users/signup", Signup)
-		app.POST("/api/v1/users/login", Login)
 	}
 
 	return app

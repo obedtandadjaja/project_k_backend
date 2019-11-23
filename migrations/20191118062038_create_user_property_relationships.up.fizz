@@ -2,7 +2,7 @@ create_table("user_property_relationships") {
 	t.Column("id", "uuid", {primary: true, "default_raw": "uuid_generate_v4()"})
 	t.Column("user_id", "uuid", {})
 	t.Column("property_id", "uuid", {})
-	t.Column("type", "string", {})
+	t.Column("type", "string", {default: "owner"})
 	t.Timestamps()
 
 	t.ForeignKey("user_id", {"users": ["id"]}, {"on_delete": "cascade"})
