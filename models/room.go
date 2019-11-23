@@ -14,7 +14,7 @@ import (
 type Room struct {
 	ID              uuid.UUID  `json:"id,omitempty" db:"id"`
 	PropertyID      uuid.UUID  `json:"property_id,omitempty" db:"property_id"`
-	Property        *Property  `json:"property,omitempty" belongs_to:property`
+	Property        *Property  `json:"property,omitempty" belongs_to:"property"`
 	Name            string     `json:"name,omitempty" db:"name"`
 	PriceAmount     int        `json:"price_amount,omitempty" db:"price_amount"`
 	PaymentSchedule string     `json:"payment_schedule,omitempty" db:"payment_schedule"`
