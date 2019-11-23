@@ -6,7 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/pop/slices"
 	"github.com/gofrs/uuid"
 	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
@@ -56,12 +58,15 @@ func (v UsersResource) Show(c buffalo.Context) error {
 }
 
 func (v UsersResource) Create(c buffalo.Context) error {
-	user := &models.User{}
+	user := &models.User{
+		Data: slices.Map{},
+	}
 
 	if err := c.Bind(user); err != nil {
 		return err
 	}
 
+	// start of generating random credential on auth server
 	dummyPassword, _ := helpers.GenerateRandomString(15)
 	res, err := clients.NewAuthClient().CreateCredential(
 		&clients.CreateCredentialRequest{
@@ -73,16 +78,17 @@ func (v UsersResource) Create(c buffalo.Context) error {
 	if err != nil {
 		return err
 	}
-
 	if res.StatusCode != http.StatusCreated {
 		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
 	}
+	// end of generating random credential on auth server
 
 	var resBody map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&resBody)
 
 	credentialUUID, _ := uuid.FromString(resBody["credential_uuid"].(string))
-	user.CredentialUUID = credentialUUID
+	user.CredentialUUID = nulls.NewUUID(credentialUUID)
+	user.NotificationMethods = []string{"email"}
 
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {

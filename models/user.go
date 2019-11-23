@@ -13,19 +13,19 @@ import (
 )
 
 type User struct {
-	ID                  uuid.UUID     `json:"id" db:"id"`
-	Name                nulls.String  `json:"name" db:"name"`
-	CredentialUUID      uuid.UUID     `json:"credential_uuid" db:"credential_uuid"`
-	Email               string        `json:"email" db:"email"`
-	Phone               nulls.String  `json:"phone" db:"phone"`
-	NotificationMethods slices.String `json:"notification_methods" db:"notification_methods"`
-	DeactivatedAt       nulls.Time    `json:"deactivated_at" db:"deactivated_at"`
-	Data                slices.Map    `json:"data" db:"data"`
-	CreatedAt           time.Time     `json:"created_at" db:"created_at"`
-	UpdatedAt           time.Time     `json:"updated_at" db:"updated_at"`
-	Properties          []Property    `many_to_many:"user_property_relationships"`
-	Rooms               []Room        `many_to_many:"room_occupancies"`
-	Payments            []Payment     `many_to_many:"room_occupancies"`
+	ID                  uuid.UUID     `json:"id,omitempty" db:"id"`
+	Name                nulls.String  `json:"name,omitempty" db:"name"`
+	CredentialUUID      nulls.UUID    `json:"credentialUUID,omitmepty" db:"credential_uuid"`
+	Email               string        `json:"email,omitempty" db:"email"`
+	Phone               nulls.String  `json:"phone,omityempty" db:"phone"`
+	NotificationMethods slices.String `json:"notificationMethods,omitempty" db:"notification_methods"`
+	DeactivatedAt       nulls.Time    `json:"deactivatedAt,omitempty" db:"deactivated_at"`
+	Data                slices.Map    `json:"data,omitempty" db:"data"`
+	CreatedAt           time.Time     `json:"createdAt,omitempty" db:"created_at"`
+	UpdatedAt           time.Time     `json:"updatedAt,omitempty" db:"updated_at"`
+	Properties          []Property    `json:"properties,omitempty" many_to_many:"user_property_relationships"`
+	Rooms               []Room        `json:"rooms,omitempty" many_to_many:"room_occupancies"`
+	Payments            []Payment     `json:"payments,omitempty" many_to_many:"room_occupancies"`
 }
 
 // String is not required by pop and may be deleted
@@ -47,7 +47,6 @@ func (u Users) String() string {
 // This method is not required and may be deleted.
 func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
-		&validators.UUIDIsPresent{Field: u.CredentialUUID, Name: "CredentialUUID"},
 		&validators.StringIsPresent{Field: u.Email, Name: "Email"},
 	), nil
 }
@@ -62,4 +61,8 @@ func (u *User) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (u *User) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+func (u User) TableName() string {
+	return "users"
 }

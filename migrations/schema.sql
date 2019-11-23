@@ -165,9 +165,9 @@ CREATE TABLE users (
     credential_uuid uuid NOT NULL,
     email character varying(255) NOT NULL,
     phone character varying(255),
-    notification_methods character varying[] DEFAULT '{}'::character varying[] NOT NULL,
+    notification_methods character varying[],
     deactivated_at timestamp without time zone,
-    data jsonb DEFAULT '{}'::jsonb NOT NULL,
+    data jsonb,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -234,7 +234,7 @@ CREATE UNIQUE INDEX schema_migration_version_idx ON schema_migration USING btree
 -- Name: users_email_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX users_email_idx ON users USING btree (email);
+CREATE UNIQUE INDEX users_email_idx ON users USING btree (email);
 
 
 --

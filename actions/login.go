@@ -2,22 +2,26 @@ package actions
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/obedtandadjaja/project_k_backend/clients"
+	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
 type LoginRequest struct {
-	Email    string
-	Password string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type LoginResponse struct {
-	Jwt        string `json:"jwt"`
-	SessionJwt string `json:"session"`
+	Jwt        string       `json:"jwt"`
+	SessionJwt string       `json:"session"`
+	User       *models.User `json:"user"`
 }
 
 func Login(c buffalo.Context) error {
@@ -45,17 +49,30 @@ func Login(c buffalo.Context) error {
 		return err
 	}
 
-	if res.StatusCode != http.StatusCreated {
-		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
+	if res.StatusCode == http.StatusUnauthorized {
+		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
+	} else if res.StatusCode != http.StatusOK {
+		return c.Render(http.StatusInternalServerError, r.JSON(res.StatusCode))
 	}
 
 	var resBody map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&resBody)
 
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return fmt.Errorf("no transaction found")
+	}
+
+	user := &models.User{}
+	if err := tx.Where("credential_uuid = ?", resBody["credential_uuid"].(string)).First(user); err != nil {
+		return c.Error(http.StatusNotFound, err)
+	}
+
 	return c.Render(http.StatusCreated, r.JSON(
 		LoginResponse{
 			Jwt:        resBody["jwt"].(string),
 			SessionJwt: resBody["session"].(string),
+			User:       user,
 		},
 	))
 }

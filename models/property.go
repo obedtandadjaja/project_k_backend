@@ -13,11 +13,11 @@ import (
 
 type Property struct {
 	ID        uuid.UUID  `json:"id" db:"id"`
-	Name      string     `json:"name" db:"name"`
-	Data      slices.Map `json:"data" db:"data"`
-	CreatedAt time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
-	Users     []User     `many_to_many:"user_property_relationships"`
+	Name      string     `json:"name,omitempty" db:"name"`
+	Data      slices.Map `json:"data,omitempty" db:"data"`
+	CreatedAt time.Time  `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at,omitempty" db:"updated_at"`
+	Users     []User     `json:"users,omitempty" many_to_many:"user_property_relationships"`
 	Rooms     []Room     `json:"rooms,omitempty" has_many:"rooms"`
 }
 

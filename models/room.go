@@ -12,16 +12,16 @@ import (
 )
 
 type Room struct {
-	ID              uuid.UUID  `json:"id" db:"id"`
-	PropertyID      uuid.UUID  `json:"property_id" db:"property_id"`
+	ID              uuid.UUID  `json:"id,omitempty" db:"id"`
+	PropertyID      uuid.UUID  `json:"property_id,omitempty" db:"property_id"`
 	Property        *Property  `json:"property,omitempty" belongs_to:property`
-	Name            string     `json:"name" db:"name"`
-	PriceAmount     int        `json:"price_amount" db:"price_amount"`
-	PaymentSchedule string     `json:"payment_schedule" db:"payment_schedule"`
-	Data            slices.Map `json:"data" db:"data"`
-	CreatedAt       time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt       time.Time  `json:"updated_at" db:"updated_at"`
-	Users           []User     `many_to_many:"room_occupancies"`
+	Name            string     `json:"name,omitempty" db:"name"`
+	PriceAmount     int        `json:"price_amount,omitempty" db:"price_amount"`
+	PaymentSchedule string     `json:"payment_schedule,omitempty" db:"payment_schedule"`
+	Data            slices.Map `json:"data,omitempty" db:"data"`
+	CreatedAt       time.Time  `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at,omitempty" db:"updated_at"`
+	Users           []User     `json:"users,omitempty" many_to_many:"room_occupancies"`
 }
 
 // String is not required by pop and may be deleted

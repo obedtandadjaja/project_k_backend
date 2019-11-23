@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
@@ -59,9 +60,8 @@ func Signup(c buffalo.Context) error {
 	credentialUUID, _ := uuid.FromString(resBody["credential_uuid"].(string))
 	user := &models.User{
 		Email:               req.Email,
-		CredentialUUID:      credentialUUID,
+		CredentialUUID:      nulls.NewUUID(credentialUUID),
 		NotificationMethods: []string{"email"},
-		Data:                make(map[string]interface{}),
 	}
 
 	err = tx.Create(user)
