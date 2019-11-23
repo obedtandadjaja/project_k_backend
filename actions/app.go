@@ -65,10 +65,10 @@ func App() *buffalo.App {
 		app.POST("/api/v1/signup", Signup)
 		app.POST("/api/v1/login", Login)
 		app.Resource("/api/v1/users", UsersResource{})
-		app.Resource("/api/v1/properties", PropertiesResource{})
-		app.Resource("/api/v1/rooms", RoomsResource{})
-		app.Resource("/api/v1/room_occupancies", RoomOccupanciesResource{})
-		app.Resource("/api/v1/payments", PaymentsResource{})
+		app.Resource("/api/v1/users/{user_id}/properties", PropertiesResource{})
+		app.Resource("/api/v1/users/{user_id}/properties/{property_id}/rooms", RoomsResource{})
+		app.Resource("/api/v1/users/{user_id}/room_occupancies", RoomOccupanciesResource{})
+		app.Resource("/api/v1/users/{user_id}/room_occupancies/{room_occupancy_id}/payments", PaymentsResource{})
 	}
 
 	return app

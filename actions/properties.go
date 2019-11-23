@@ -6,6 +6,7 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
@@ -45,7 +46,11 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 
 	property := &models.Property{}
 
-	if err := tx.Eager().Find(property, c.Param("property_id")); err != nil {
+	err := tx.Q().
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Param("user_id")).
+		Find(property, c.Param("property_id"))
+	if err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -54,6 +59,9 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 
 func (v PropertiesResource) Create(c buffalo.Context) error {
 	property := &models.Property{}
+	property.Users = models.Users{
+		models.User{ID: helpers.ParseUUID(c.Param("user_id"))},
+	}
 
 	if err := c.Bind(property); err != nil {
 		return err
@@ -85,8 +93,11 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 	}
 
 	property := &models.Property{}
-
-	if err := tx.Find(property, c.Param("property_id")); err != nil {
+	err := tx.Q().
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Param("user_id")).
+		Find(property, c.Param("property_id"))
+	if err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -96,7 +107,7 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 
 	fmt.Println(property)
 
-	verrs, err := tx.Eager().ValidateAndUpdate(property)
+	verrs, err := tx.ValidateAndUpdate(property)
 	if err != nil {
 		return err
 	}
@@ -108,6 +119,7 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(property))
 }
+
 func (v PropertiesResource) Destroy(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
