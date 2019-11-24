@@ -49,8 +49,13 @@ func (v UsersResource) Show(c buffalo.Context) error {
 	}
 
 	user := &models.User{}
-
-	if err := tx.Find(user, c.Param("user_id")); err != nil {
+	q := tx.Q().
+		InnerJoin("room_occupancies", "room_occupancies.").
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("room_occupancies.room_id = ?", c.Param("room_id")).
+		Where("properties.property_id = ?", c.Param("property_id"))
+	if err := q.Find(user, c.Param("user_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -59,8 +64,13 @@ func (v UsersResource) Show(c buffalo.Context) error {
 
 func (v UsersResource) Create(c buffalo.Context) error {
 	user := &models.User{
+		Rooms: models.Rooms{
+			models.Room{ID: helpers.ParseUUID(c.Param("room_id"))},
+		},
 		Data: slices.Map{},
 	}
+
+	// TODO: check user has ownership of property
 
 	if err := c.Bind(user); err != nil {
 		return err

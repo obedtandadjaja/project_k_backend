@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -52,5 +51,5 @@ func VerifyAccessToken(tokenString string) (string, error) {
 }
 
 func secretKey() []byte {
-	return []byte(os.Getenv("SECRET_KEY"))
+	return []byte("gk[3)[k^8'CbMc%auE'=!Ak+ND_>v==B`*<72_Rr\")j`+-{{a5:2=;vrnr^Gb-Y?YJU}E;q?4y<F^'u^C]Le*7v-$pc%<2TJ]>zp%N]z3#WVK&F#Z'8Bw;}[@aV(3{~L")
 }

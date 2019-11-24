@@ -75,33 +75,16 @@ func (authClient *AuthClient) Login(r *LoginRequest) (*http.Response, error) {
 	return res, err
 }
 
-// Token
-type TokenRequest struct {
+// Verify session token
+type VerifySessionTokenRequest struct {
 	SessionJwt string `json:"session"`
 }
 
-func (authClient *AuthClient) Token(r *LoginRequest) (*http.Response, error) {
+func (authClient *AuthClient) VerifySessionToken(r *VerifySessionTokenRequest) (*http.Response, error) {
 	requestBody, err := json.Marshal(r)
 
 	res, err := http.Post(
-		authClient.AuthAPIUrl+"/api/v1/token",
-		"application/json",
-		bytes.NewBuffer(requestBody),
-	)
-
-	return res, err
-}
-
-// Verify token
-type VerifyTokenRequest struct {
-	Jwt string `json:"jwt"`
-}
-
-func (authClient *AuthClient) VerifyToken(r *LoginRequest) (*http.Response, error) {
-	requestBody, err := json.Marshal(r)
-
-	res, err := http.Post(
-		authClient.AuthAPIUrl+"/api/v1/verify_token",
+		authClient.AuthAPIUrl+"/api/v1/verify_session_token",
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
