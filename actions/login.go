@@ -9,6 +9,7 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
+	"github.com/gofrs/uuid"
 	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -19,9 +20,9 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Jwt        string       `json:"jwt"`
-	SessionJwt string       `json:"session"`
-	User       *models.User `json:"user"`
+	Jwt        string    `json:"jwt"`
+	SessionJwt string    `json:"session"`
+	UserID     uuid.UUID `json:"user_id"`
 }
 
 func Login(c buffalo.Context) error {
@@ -64,7 +65,7 @@ func Login(c buffalo.Context) error {
 	}
 
 	user := &models.User{}
-	if err := tx.Where("credential_uuid = ?", resBody["credential_uuid"].(string)).First(user); err != nil {
+	if err := tx.Select("id").Where("credential_uuid = ?", resBody["credential_uuid"].(string)).First(user); err != nil {
 		return c.Error(http.StatusUnauthorized, err)
 	}
 
@@ -72,7 +73,7 @@ func Login(c buffalo.Context) error {
 		LoginResponse{
 			Jwt:        resBody["jwt"].(string),
 			SessionJwt: resBody["session"].(string),
-			User:       user,
+			UserID:     user.ID,
 		},
 	))
 }
