@@ -52,12 +52,17 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 
 	property := &models.Property{}
 
-	err := tx.Q().
+	query := tx.Q().
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Param("user_id")).
-		Find(property, c.Param("property_id"))
-	if err != nil {
-		return c.Error(http.StatusNotFound, err)
+		Where("user_property_relationships.user_id = ?", c.Param("user_id"))
+	if c.Param("eager") == "true" {
+		if err := query.Eager().Find(property, c.Param("property_id")); err != nil {
+			return c.Error(http.StatusNotFound, err)
+		}
+	} else {
+		if err := query.Find(property, c.Param("property_id")); err != nil {
+			return c.Error(http.StatusNotFound, err)
+		}
 	}
 
 	return c.Render(http.StatusOK, r.JSON(property))

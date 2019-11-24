@@ -6,6 +6,8 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/pop/slices"
+	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
@@ -44,8 +46,12 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 	}
 
 	room := &models.Room{}
-
-	if err := tx.Find(room, c.Param("room_id")); err != nil {
+	err := tx.Q().
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		InnerJoin("rooms", "rooms.property_id = user_property_relationships.property_id").
+		Where("user_property_relationships.user_id = ?", c.Param("user_id")).
+		Find(room, c.Param("room_id"))
+	if err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -53,7 +59,12 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 }
 
 func (v RoomsResource) Create(c buffalo.Context) error {
-	room := &models.Room{}
+	room := &models.Room{
+		Property: &models.Property{ID: helpers.ParseUUID(c.Param("property_id"))},
+		Data:     slices.Map{},
+	}
+
+	// TODO: check user has ownership of property
 
 	if err := c.Bind(room); err != nil {
 		return err
