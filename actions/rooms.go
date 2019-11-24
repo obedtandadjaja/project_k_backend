@@ -29,7 +29,7 @@ func (v RoomsResource) List(c buffalo.Context) error {
 	q := tx.PaginateFromParams(c.Params()).
 		InnerJoin("properties", "properties.id = rooms.property_id").
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		// Where("user_property_relationships.user_id = ?", c.Param("current_user_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
 		Where("properties.id = ?", c.Param("property_id"))
 	if c.Param("eager") == "true" {
 		if err := q.Eager().All(rooms); err != nil {
@@ -57,7 +57,7 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 	q := tx.Q().
 		InnerJoin("properties", "properties.id = rooms.property_id").
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		// Where("user_property_relationships.user_id = ?", c.Param("current_user_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
 		Where("properties.id = ?", c.Param("property_id"))
 	if c.Param("eager") == "true" {
 		if err := q.Eager().Find(room, c.Param("room_id")); err != nil {

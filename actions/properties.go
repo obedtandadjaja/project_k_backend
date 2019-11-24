@@ -54,7 +54,7 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 
 	q := tx.Q().
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Param("current_user_id"))
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	if c.Param("eager") == "true" {
 		if err := q.Eager().Find(property, c.Param("property_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
@@ -71,7 +71,7 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 func (v PropertiesResource) Create(c buffalo.Context) error {
 	property := &models.Property{}
 	property.Users = models.Users{
-		models.User{ID: helpers.ParseUUID(c.Param("current_user_id"))},
+		models.User{ID: helpers.ParseUUID(c.Value("current_user_id").(string))},
 	}
 
 	if err := c.Bind(property); err != nil {
@@ -106,7 +106,7 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 	property := &models.Property{}
 	err := tx.Q().
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		// Where("user_property_relationships.user_id = ?", c.Param("current_user_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
 		Find(property, c.Param("property_id"))
 	if err != nil {
 		return c.Error(http.StatusNotFound, err)

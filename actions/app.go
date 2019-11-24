@@ -1,8 +1,6 @@
 package actions
 
 import (
-	"fmt"
-
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
@@ -58,9 +56,10 @@ func App() *buffalo.App {
 		app.POST("/api/v1/token", Token)
 		app.POST("/api/v1/signup", Signup)
 		app.POST("/api/v1/login", Login)
+		app.Resource("/api/v1/users", UsersResource{})
 		app.Resource("/api/v1/properties", PropertiesResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms", RoomsResource{})
-		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants", UsersResource{})
+		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
 		app.Resource("/api/v1/room_occupancies", RoomOccupanciesResource{})
 		app.Resource("/api/v1/room_occupancies/{room_occupancy_id}/payments", PaymentsResource{})
 	}
@@ -83,9 +82,7 @@ func forceSSL() buffalo.MiddlewareFunc {
 func parseAccessToken(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		if jwt := c.Request().Header.Get("Authorization"); jwt != "" {
-			userID, err := helpers.VerifyAccessToken(jwt)
-			fmt.Println(userID)
-			fmt.Println(err)
+			userID, _ := helpers.VerifyAccessToken(jwt)
 			c.Set("current_user_id", userID)
 		}
 
