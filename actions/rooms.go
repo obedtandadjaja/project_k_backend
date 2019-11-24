@@ -26,11 +26,18 @@ func (v RoomsResource) List(c buffalo.Context) error {
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params())
-
-	// Retrieve all Rooms from the DB
-	if err := q.All(rooms); err != nil {
-		return err
+	q := tx.PaginateFromParams(c.Params()).
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Param("user_id"))
+	if c.Param("eager") == "true" {
+		if err := q.Eager().All(rooms); err != nil {
+			return err
+		}
+	} else {
+		if err := q.All(rooms); err != nil {
+			return err
+		}
 	}
 
 	// Add the paginator to the context so it can be used in the template.
@@ -46,13 +53,18 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 	}
 
 	room := &models.Room{}
-	err := tx.Q().
+	q := tx.Q().
+		InnerJoin("properties", "properties.id = rooms.property_id").
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		InnerJoin("rooms", "rooms.property_id = user_property_relationships.property_id").
-		Where("user_property_relationships.user_id = ?", c.Param("user_id")).
-		Find(room, c.Param("room_id"))
-	if err != nil {
-		return c.Error(http.StatusNotFound, err)
+		Where("user_property_relationships.user_id = ?", c.Param("user_id"))
+	if c.Param("eager") == "true" {
+		if err := q.Eager().Find(room, c.Param("room_id")); err != nil {
+			return err
+		}
+	} else {
+		if err := q.Find(room, c.Param("room_id")); err != nil {
+			return err
+		}
 	}
 
 	return c.Render(http.StatusOK, r.JSON(room))
