@@ -8,12 +8,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type RefreshTokenClaim struct {
-	CredentialUUID string `json:"credential_uuid"`
-	SessionUUID    string `json:"session_uuid"`
-	jwt.StandardClaims
-}
-
 type AccessTokenClaim struct {
 	UserID         string `json:"user_id"`
 	CredentialUUID string `json:"credential_uuid"`
@@ -38,23 +32,6 @@ func GenerateAccessToken(userID, credentialUuid string) (string, error) {
 	}
 
 	return tokenString, nil
-}
-
-func VerifyRefreshToken(tokenString string) (string, error) {
-	token, err := jwt.ParseWithClaims(
-		tokenString,
-		&RefreshTokenClaim{},
-		func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("There was an error")
-			}
-			return secretKey(), nil
-		})
-	if err != nil {
-		return "", err
-	}
-
-	return token.Claims.(*RefreshTokenClaim).CredentialUUID, nil
 }
 
 func VerifyAccessToken(tokenString string) (string, error) {
