@@ -25,11 +25,17 @@ func (v PropertiesResource) List(c buffalo.Context) error {
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params())
-
-	// Retrieve all Properties from the DB
-	if err := q.All(properties); err != nil {
-		return err
+	q := tx.PaginateFromParams(c.Params()).
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Param("user_id"))
+	if c.Param("eager") == "true" {
+		if err := q.Eager().All(properties); err != nil {
+			return err
+		}
+	} else {
+		if err := q.All(properties); err != nil {
+			return err
+		}
 	}
 
 	// Add the paginator to the context so it can be used in the template.

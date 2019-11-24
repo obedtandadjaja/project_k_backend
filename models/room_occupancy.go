@@ -20,7 +20,7 @@ type RoomOccupancy struct {
 	Type         string     `json:"type" db:"type"`
 	CreatedAt    time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at" db:"updated_at"`
-	Payments     []Payment  `json:"payments,omitempty" has_many:"payments"`
+	Payments     []Payment  `json:"payments" has_many:"payments"`
 }
 
 // String is not required by pop and may be deleted

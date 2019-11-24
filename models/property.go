@@ -19,8 +19,8 @@ type Property struct {
 	Data      slices.Map `json:"data,omitempty" db:"data"`
 	CreatedAt time.Time  `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at,omitempty" db:"updated_at"`
-	Users     []User     `json:"users,omitempty" many_to_many:"user_property_relationships"`
-	Rooms     []Room     `json:"rooms,omitempty" has_many:"rooms"`
+	Users     []User     `json:"users" many_to_many:"user_property_relationships"`
+	Rooms     []Room     `json:"rooms" has_many:"rooms"`
 }
 
 // String is not required by pop and may be deleted

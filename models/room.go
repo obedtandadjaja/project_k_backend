@@ -14,14 +14,14 @@ import (
 type Room struct {
 	ID              uuid.UUID  `json:"id,omitempty" db:"id"`
 	PropertyID      uuid.UUID  `json:"propertyId,omitempty" db:"property_id"`
-	Property        Property   `json:"property,omitempty" belongs_to:"property"`
+	Property        *Property  `json:"property,omitempty" belongs_to:"property"`
 	Name            string     `json:"name,omitempty" db:"name"`
 	PriceAmount     int        `json:"priceAmount,omitempty" db:"price_amount"`
 	PaymentSchedule string     `json:"paymentSchedule,omitempty" db:"payment_schedule"`
 	Data            slices.Map `json:"data,omitempty" db:"data"`
 	CreatedAt       time.Time  `json:"createdAt,omitempty" db:"created_at"`
 	UpdatedAt       time.Time  `json:"updatedAt,omitempty" db:"updated_at"`
-	Users           []User     `json:"users,omitempty" many_to_many:"room_occupancies"`
+	Users           []User     `json:"users" many_to_many:"room_occupancies"`
 }
 
 // String is not required by pop and may be deleted
