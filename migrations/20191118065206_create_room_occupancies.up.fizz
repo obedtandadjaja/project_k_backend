@@ -3,7 +3,7 @@ create_table("room_occupancies") {
 	t.Column("user_id", "uuid", {})
 	t.Column("room_id", "uuid", {})
 	t.Column("terminated_at", "timestamp", {null: true})
-	t.Column("type", "string", {default: "monthly"})
+	t.Column("type", "string", {default: "renter"})
 	t.Timestamps()
 
 	t.ForeignKey("user_id", {"users": ["id"]}, {"on_delete": "cascade"})
