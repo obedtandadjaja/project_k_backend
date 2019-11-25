@@ -9,7 +9,7 @@ data:
   DB_PORT: '3306'
   DB_USER: 'postgres'
   DB_NAME: 'project_k_backend_stg'
-  DB_POOL: 5
+  DB_POOL: '5'
   APP_HOST: ''
   APP_PORT: '3000'
   AUTH_API_HOST: 'auth-go'

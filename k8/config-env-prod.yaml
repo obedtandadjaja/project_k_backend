@@ -4,10 +4,14 @@ metadata:
   name: project-k-backend-env
   namespace: default
 data:
-  ENV: 'prod'
-  DB_HOST: ''
-  DB_PORT: ''
+  ENV: 'production'
+  DB_HOST: 'localhost'
+  DB_PORT: '3306'
   DB_USER: 'postgres'
-  DB_NAME: 'auth'
+  DB_NAME: 'project_k_backend_stg'
+  DB_POOL: '5'
   APP_HOST: ''
   APP_PORT: '3000'
+  AUTH_API_HOST: 'auth-go'
+  AUTH_API_PORT: '80'
+  AUTH_API_PREFIX: ''
