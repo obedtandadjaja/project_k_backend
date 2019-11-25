@@ -29,9 +29,14 @@ func (v TenantsResource) List(c buffalo.Context) error {
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params())
-
-	// Retrieve all Users from the DB
+	q := tx.PaginateFromParams(c.Params()).
+		InnerJoin("room_occupancies", "room_occupancies.user_id = users.id").
+		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("rooms.id = ?", c.Param("room_id")).
+		Where("properties.id = ?", c.Param("property_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	if err := q.All(users); err != nil {
 		return err
 	}
@@ -50,12 +55,14 @@ func (v TenantsResource) Show(c buffalo.Context) error {
 
 	user := &models.User{}
 	q := tx.Q().
-		InnerJoin("room_occupancies", "room_occupancies.").
+		InnerJoin("room_occupancies", "room_occupancies.user_id = users.id").
+		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
 		InnerJoin("properties", "properties.id = rooms.property_id").
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("room_occupancies.room_id = ?", c.Param("room_id")).
-		Where("properties.property_id = ?", c.Param("property_id"))
-	if err := q.Find(user, c.Param("user_id")); err != nil {
+		Where("rooms.id = ?", c.Param("room_id")).
+		Where("properties.id = ?", c.Param("property_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
+	if err := q.Find(user, c.Param("tenant_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -125,8 +132,15 @@ func (v TenantsResource) Update(c buffalo.Context) error {
 	}
 
 	user := &models.User{}
-
-	if err := tx.Find(user, c.Param("user_id")); err != nil {
+	q := tx.Q().
+		InnerJoin("room_occupancies", "room_occupancies.user_id = users.id").
+		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("rooms.id = ?", c.Param("room_id")).
+		Where("properties.id = ?", c.Param("property_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
+	if err := q.Find(user, c.Param("tenant_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -155,7 +169,7 @@ func (v TenantsResource) Destroy(c buffalo.Context) error {
 
 	user := &models.User{}
 
-	if err := tx.Find(user, c.Param("user_id")); err != nil {
+	if err := tx.Find(user, c.Param("tenant_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
