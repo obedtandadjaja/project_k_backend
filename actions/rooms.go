@@ -60,10 +60,12 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
 		Where("properties.id = ?", c.Param("property_id"))
 	if c.Param("eager") == "true" {
+		fmt.Println("hello")
 		if err := q.Eager().Find(room, c.Param("room_id")); err != nil {
 			return err
 		}
 	} else {
+		fmt.Println("hey")
 		if err := q.Find(room, c.Param("room_id")); err != nil {
 			return err
 		}

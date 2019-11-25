@@ -21,7 +21,7 @@ type Room struct {
 	Data            slices.Map `json:"data,omitempty" db:"data"`
 	CreatedAt       time.Time  `json:"createdAt,omitempty" db:"created_at"`
 	UpdatedAt       time.Time  `json:"updatedAt,omitempty" db:"updated_at"`
-	Users           []User     `json:"users" many_to_many:"room_occupancies"`
+	Tenants         []User     `json:"tenants" many_to_many:"room_occupancies"`
 }
 
 // String is not required by pop and may be deleted
