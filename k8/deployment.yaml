@@ -28,7 +28,7 @@ spec:
                 name: project-k-backend{{ENV}}-env
           readinessProbe:
             httpGet:
-              path: "/health"
+              path: "/api/health"
               port: 3000
             initialDelaySeconds: 2
             timeoutSeconds: 5

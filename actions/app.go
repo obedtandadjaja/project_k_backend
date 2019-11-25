@@ -52,7 +52,7 @@ func App() *buffalo.App {
 
 		app.Use(popmw.Transaction(models.DB))
 
-		app.GET("/", HomeHandler)
+		app.GET("/api/health", Health)
 		app.POST("/api/v1/token", Token)
 		app.POST("/api/v1/signup", Signup)
 		app.POST("/api/v1/login", Login)
