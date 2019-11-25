@@ -5,6 +5,7 @@ metadata:
   namespace: default
 data:
   ENV: 'production'
+  GO_ENV: 'production'
   DB_HOST: 'localhost'
   DB_PORT: '3306'
   DB_USER: 'postgres'

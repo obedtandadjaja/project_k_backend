@@ -15,6 +15,14 @@ test:
   host: 127.0.0.1
   pool: 5
 
+stage:
+  dialect: postgres
+  database: {{envOr "DB_NAME" "project_k_backend_stg"}}
+  user: {{envOr "DB_USER" "postgres"}}
+  password: {{envOr "DB_PASSWORD" ""}}
+  host: {{envOr "DB_HOST" "127.0.0.1"}}
+  pool: {{envOr "DB_POOL" "5"}}
+
 production:
   dialect: postgres
   database: {{envOr "DB_NAME" "project_k_backend"}}

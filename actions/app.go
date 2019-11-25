@@ -74,7 +74,7 @@ func App() *buffalo.App {
 // for more information: https://github.com/unrolled/secure/
 func forceSSL() buffalo.MiddlewareFunc {
 	return forcessl.Middleware(secure.Options{
-		SSLRedirect:     ENV == "production",
+		SSLRedirect:     ENV == "production" || ENV == "stage",
 		SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
 	})
 }

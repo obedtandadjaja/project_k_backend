@@ -5,6 +5,7 @@ metadata:
   namespace: default
 data:
   ENV: 'stage'
+  GO_ENV: 'stage'
   DB_HOST: 'localhost'
   DB_PORT: '3306'
   DB_USER: 'postgres'
