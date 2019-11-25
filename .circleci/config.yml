@@ -1,0 +1,121 @@
+version: 2
+
+jobs:
+  build_and_test:
+    docker:
+      - image: circleci/golang:1.13
+        environment:
+          TEST_DB_USER: "postgres"
+          TEST_DB_URL: "postgresql://postgres@localhost:5432"
+      - image: circleci/postgres:9.6-alpine-ram
+    working_directory: /go/src/github.com/obedtandadjaja/project-k-backend
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+
+      # Test database set up
+      - run: sudo apt install -y postgresql-client
+      - run:
+          name: Waiting for Postgres to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 5432 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
+      - run: |
+          psql \
+          -d $TEST_DB_URL \
+          -c "CREATE DATABASE project_k_backend_test;"
+
+      - run: go mod download
+      - run: go mod vendor
+
+      - save_cache:
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
+      - run: make test
+
+  docker_push:
+    # Build app container and push it to the GCR registry
+    # Note: we want to build and push an image with tags based on both
+    # the Git commit hash AND the branch name. This way, we can refer to
+    # images by commit (which is immutable) or branch name (which
+    # dynamically tracks the latest build for each branch).
+    docker:
+      - image: bayesimpact/circleci:latest
+    working_directory: /go/src/github.com/obedtandadjaja/project-k-backend
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Authenticate with GCR
+          command: |
+            echo "${GCR_DOCKER_REGISTRY_PASSWORD}" | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
+          name: Build app image
+          command: |
+            docker build --rm=false \
+            -t gcr.io/${GCP_PROJECT_ID}/project-k-backend:${CIRCLE_SHA1} \
+            -t gcr.io/${GCP_PROJECT_ID}/project-k-backend:${CIRCLE_BRANCH} \
+            -f ./Dockerfile .
+      - run:
+          name: Push app image
+          command: |
+            docker push gcr.io/${GCP_PROJECT_ID}/project-k-backend:${CIRCLE_SHA1}
+            docker push gcr.io/${GCP_PROJECT_ID}/project-k-backend:${CIRCLE_BRANCH}
+
+  kubernetes_deploy:
+    docker:
+      - image: google/cloud-sdk:alpine
+    working_directory: /go/src/github.com/obedtandadjaja/project-k-backend
+    steps:
+      - checkout
+      - run:
+          name: Deploy the current commit on this branch to the GKE cluster
+          command: |
+            gcloud components install kubectl
+            echo "${GKE_CD_SERVICE_ACCOUNT_KEY}" > .key.json
+            gcloud auth activate-service-account --key-file .key.json
+            gcloud config set compute/zone "${GKE_ZONE}"
+            gcloud config set project "${GCP_PROJECT_ID}"
+            gcloud container clusters get-credentials "${GKE_CLUSTER}" --zone "${GKE_ZONE}"
+
+            DEPLOYMENT_SUFFIX="-stg"
+
+            kubectl apply -f k8/config-env-stage.yaml
+            kubectl apply -f k8/service.yaml
+
+            template=`cat "k8/deployment.yaml" | sed "s/{{IMAGE_TAG}}/$CIRCLE_SHA1/g" | sed "s/{{ENV}}/$DEPLOYMENT_SUFFIX/g"`
+            echo "$template" | kubectl apply -f -
+
+# all workflows are only valid on master
+workflows:
+  version: 2
+  build_test_and_deploy:
+    jobs:
+      - build_and_test:
+          filters:
+            branches:
+              only:
+                - master
+      - docker_push:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build_and_test
+      - kubernetes_deploy:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - docker_push

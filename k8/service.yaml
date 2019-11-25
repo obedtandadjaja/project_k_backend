@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-k-backend
+  labels:
+    app: project-k-backend
+spec:
+  selector:
+    app: project-k-backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000

@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: auth-go-env
+  namespace: default
+data:
+  ENV: 'prod'
+  DB_HOST: ''
+  DB_PORT: ''
+  DB_USER: 'postgres'
+  DB_NAME: 'auth'
+  APP_HOST: ''
+  APP_PORT: '3000'

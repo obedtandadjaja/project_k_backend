@@ -6,7 +6,7 @@ RUN mkdir -p $GOPATH/src/github.com/obedtandadjaja
 WORKDIR $GOPATH/src/github.com/obedtandadjaja
 
 ADD . .
-RUN go get ./...
+RUN go mod download
 RUN buffalo build --static -o /bin/app
 
 FROM alpine

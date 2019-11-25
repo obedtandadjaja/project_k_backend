@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-k-backend{{ENV}}-deployment
+  labels:
+    app: project-k-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-k-backend
+  template:
+    metadata:
+      labels:
+        app: project-k-backend
+    spec:
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+      containers:
+        - name: project-k-backend{{ENV}}
+          image: gcr.io/obedt-dev/project-k-backend:{{IMAGE_TAG}}
+          envFrom:
+            - configMapRef:
+                name: project-k-backend{{ENV}}-env
+            - secretRef:
+                name: project-k-backend{{ENV}}-env
+          readinessProbe:
+            httpGet:
+              path: "/health"
+              port: 3000
+            initialDelaySeconds: 2
+            timeoutSeconds: 5
+            periodSeconds: 6
+            successThreshold: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 150m
+              memory: 200Mi
+            limits:
+              cpu: 200m
+              memory: 220Mi
+          ports:
+            - containerPort: 3000
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.11
+          command: ["/cloud_sql_proxy",
+          "-instances=obedt-dev:asia-southeast1:project-k-backend=tcp:3306",
+          "-credential_file=/secrets/cloudsql/credentials.json"]
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
