@@ -18,7 +18,7 @@ test:
 production:
   dialect: postgres
   database: {{envOr "DB_NAME" "project_k_backend"}}
-  user: {{envOR "DB_USER" "postgres"}}
+  user: {{envOr "DB_USER" "postgres"}}
   password: {{envOr "DB_PASSWORD" ""}}
-  host: {{envOR "DB_HOST" "127.0.0.1"}}
-  pool: {{envOR "DB_POOL" "5"}}
+  host: {{envOr "DB_HOST" "127.0.0.1"}}
+  pool: {{envOr "DB_POOL" "5"}}

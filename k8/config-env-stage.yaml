@@ -8,7 +8,7 @@ data:
   DB_HOST: 'localhost'
   DB_PORT: '3306'
   DB_USER: 'postgres'
-  DB_NAME: 'project-k-backend-stg'
+  DB_NAME: 'project_k_backend_stg'
   DB_POOL: 5
   APP_HOST: ''
   APP_PORT: '3000'
