@@ -5,6 +5,7 @@ import (
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
+	"github.com/rs/cors"
 	"github.com/unrolled/secure"
 
 	"github.com/gobuffalo/buffalo-pop/pop/popmw"
@@ -12,7 +13,6 @@ import (
 	"github.com/gobuffalo/x/sessions"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
-	"github.com/rs/cors"
 )
 
 var ENV = envy.Get("ENV", "development")
@@ -23,20 +23,17 @@ func App() *buffalo.App {
 		app = buffalo.New(buffalo.Options{
 			Env:          ENV,
 			SessionStore: sessions.Null{},
-			PreWares: []buffalo.PreWare{
-				cors.Default().Handler,
-			},
-			SessionName: "_project_k_backend_session",
+			SessionName:  "_project_k_backend_session",
 		})
 
-		// if app.Env == "development" {
-		// 	app.PreWares = []buffalo.PreWare{cors.New(cors.Options{
-		// 		AllowedOrigins:   []string{"*"},
-		// 		AllowedMethods:   []string{"OPTIONS", "GET", "POST", "PUT", "DELETE"},
-		// 		AllowedHeaders:   []string{"Content-Type", "Cookie", "Authorization"},
-		// 		AllowCredentials: true,
-		// 	}).Handler}
-		// }
+		if app.Env == "development" {
+			app.PreWares = []buffalo.PreWare{cors.New(cors.Options{
+				AllowedOrigins:   []string{"*"},
+				AllowedMethods:   []string{"OPTIONS", "GET", "POST", "PUT", "DELETE"},
+				AllowedHeaders:   []string{"Content-Type", "Cookie", "Authorization"},
+				AllowCredentials: true,
+			}).Handler}
+		}
 
 		// Automatically redirect to SSL
 		// app.Use(forceSSL())
