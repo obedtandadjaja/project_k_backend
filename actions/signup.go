@@ -42,11 +42,16 @@ func Signup(c buffalo.Context) error {
 		},
 	)
 	if err != nil {
-		return err
+		return c.Render(http.StatusInternalServerError, r.JSON(err.Error()))
 	}
 
 	if res.StatusCode != http.StatusCreated {
-		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
+		defer res.Body.Close()
+
+		var responseBody map[string]interface{}
+		json.NewDecoder(res.Body).Decode(&responseBody)
+
+		return c.Render(http.StatusInternalServerError, r.JSON(responseBody))
 	}
 
 	var resBody map[string]interface{}
