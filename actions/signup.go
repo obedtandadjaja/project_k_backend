@@ -46,6 +46,8 @@ func Signup(c buffalo.Context) error {
 	}
 
 	if res.StatusCode != http.StatusCreated {
+		fmt.Println(res.StatusCode)
+
 		defer res.Body.Close()
 
 		var responseBody map[string]interface{}
