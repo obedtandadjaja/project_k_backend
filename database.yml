@@ -22,6 +22,7 @@ stage:
   password: {{envOr "DB_PASSWORD" ""}}
   host: {{envOr "DB_HOST" "127.0.0.1"}}
   pool: {{envOr "DB_POOL" "5"}}
+  port: {{envOr "DB_PORT" "5432"}}
 
 production:
   dialect: postgres
@@ -30,3 +31,4 @@ production:
   password: {{envOr "DB_PASSWORD" ""}}
   host: {{envOr "DB_HOST" "127.0.0.1"}}
   pool: {{envOr "DB_POOL" "5"}}
+  port: {{envOr "DB_PORT" "5432"}}
