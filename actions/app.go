@@ -29,15 +29,6 @@ func App() *buffalo.App {
 			SessionName: "_project_k_backend_session",
 		})
 
-		if app.Env == "development" {
-			app.PreWares = []buffalo.PreWare{cors.New(cors.Options{
-				AllowedOrigins:   []string{"*"},
-				AllowedMethods:   []string{"OPTIONS", "GET", "POST", "PUT", "DELETE"},
-				AllowedHeaders:   []string{"Content-Type", "Cookie", "Authorization"},
-				AllowCredentials: true,
-			}).Handler}
-		}
-
 		// Automatically redirect to SSL
 		// app.Use(forceSSL())
 
