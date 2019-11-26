@@ -13,6 +13,7 @@ RUN buffalo build --static -o /bin/app
 FROM alpine
 RUN apk add --no-cache bash
 RUN apk add --no-cache ca-certificates
+ADD https://curl.haxx.se/ca/cacert.pem /etc/ssl/ca-bundle.pem
 
 WORKDIR /bin/
 
