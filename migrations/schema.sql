@@ -103,8 +103,8 @@ CREATE TABLE room_occupancies (
     id uuid DEFAULT uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     room_id uuid NOT NULL,
-    terminated_at timestamp without time zone NOT NULL,
-    type character varying(255) NOT NULL,
+    terminated_at timestamp without time zone,
+    type character varying(255) DEFAULT 'renter'::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
