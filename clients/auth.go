@@ -27,12 +27,13 @@ func NewAuthClient() *AuthClient {
 		AuthAPIHost:   envy.Get("AUTH_API_HOST", "localhost"),
 		AuthAPIPort:   envy.Get("AUTH_API_PORT", "3000"),
 		AuthAPIPrefix: envy.Get("AUTH_API_PREFIX", ""),
-		AuthAPIUrl: fmt.Sprintf(
-			"http://%s:%s%s",
-			envy.Get("AUTH_API_HOST", "localhost"),
-			envy.Get("AUTH_API_PORT", "3000"),
-			envy.Get("AUTH_API_PREFIX", ""),
-		),
+		// AuthAPIUrl: fmt.Sprintf(
+		// 	"http://%s:%s%s",
+		// 	envy.Get("AUTH_API_HOST", "localhost"),
+		// 	envy.Get("AUTH_API_PORT", "3000"),
+		// 	envy.Get("AUTH_API_PREFIX", ""),
+		// ),
+		AuthAPIUrl: "http://api.stage.obedt.com/auth",
 	}
 
 	return authClient
