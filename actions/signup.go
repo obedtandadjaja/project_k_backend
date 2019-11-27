@@ -20,6 +20,12 @@ type SignupRequest struct {
 	Password string
 }
 
+type SignupResponse struct {
+	Jwt        string `json:"jwt"`
+	SessionJwt string `json:"session"`
+	UserID     string `json:"userID"`
+}
+
 func Signup(c buffalo.Context) error {
 	req := &SignupRequest{}
 	if err := c.Bind(req); err != nil {
@@ -69,5 +75,10 @@ func Signup(c buffalo.Context) error {
 		return err
 	}
 
-	return c.Render(http.StatusCreated, r.JSON(user))
+	response := SignupResponse{
+		Jwt:        resBody["jwt"].(string),
+		SessionJwt: resBody["session"].(string),
+		UserID:     user.ID.String(),
+	}
+	return c.Render(http.StatusCreated, r.JSON(response))
 }
