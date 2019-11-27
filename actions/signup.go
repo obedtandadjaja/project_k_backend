@@ -12,6 +12,7 @@ import (
 	"github.com/gobuffalo/validate/validators"
 	"github.com/gofrs/uuid"
 	"github.com/obedtandadjaja/project_k_backend/clients"
+	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
@@ -75,8 +76,9 @@ func Signup(c buffalo.Context) error {
 		return err
 	}
 
+	token, err := helpers.GenerateAccessToken(user.ID.String(), resBody["credential_uuid"].(string))
 	response := SignupResponse{
-		Jwt:        resBody["jwt"].(string),
+		Jwt:        token,
 		SessionJwt: resBody["session"].(string),
 		UserID:     user.ID.String(),
 	}
