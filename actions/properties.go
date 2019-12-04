@@ -6,6 +6,7 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/pop/slices"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -29,7 +30,7 @@ func (v PropertiesResource) List(c buffalo.Context) error {
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
 		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	if c.Param("eager") == "true" {
-		if err := q.Eager().All(properties); err != nil {
+		if err := q.Eager("Rooms.Tenants").All(properties); err != nil {
 			return err
 		}
 	} else {
@@ -65,26 +66,29 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 		}
 	}
 
+	tx.Load(&property.Rooms[0], "Tenants")
+
 	return c.Render(http.StatusOK, r.JSON(property))
 }
 
 func (v PropertiesResource) Create(c buffalo.Context) error {
-	property := &models.Property{}
-	property.Users = models.Users{
-		models.User{ID: helpers.ParseUUID(c.Value("current_user_id").(string))},
+	property := &models.Property{
+		Users: models.Users{
+			models.User{ID: helpers.ParseUUID(c.Value("current_user_id").(string))},
+		},
+		Data: slices.Map{},
 	}
 
 	if err := c.Bind(property); err != nil {
 		return err
 	}
-	fmt.Println(property)
 
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
 	}
 
-	verrs, err := tx.Eager().ValidateAndCreate(property)
+	verrs, err := tx.ValidateAndCreate(property)
 	if err != nil {
 		return err
 	}
@@ -115,8 +119,6 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 	if err := c.Bind(property); err != nil {
 		return err
 	}
-
-	fmt.Println(property)
 
 	verrs, err := tx.ValidateAndUpdate(property)
 	if err != nil {

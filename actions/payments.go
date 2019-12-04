@@ -44,8 +44,16 @@ func (v PaymentsResource) Show(c buffalo.Context) error {
 	}
 
 	payment := &models.Payment{}
-
-	if err := tx.Find(payment, c.Param("payment_id")); err != nil {
+	q := tx.Q().
+		InnerJoin("room_occupancies", "room_occupancies.id = payments.room_occupancy_id").
+		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("room_occupancies.user_id = ?", c.Param("tenant_id")).
+		Where("rooms.id = ?", c.Param("room_id")).
+		Where("properties.id = ?", c.Param("property_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
+	if err := q.Find(payment, c.Param("payment_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 

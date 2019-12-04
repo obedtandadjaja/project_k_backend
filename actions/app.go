@@ -57,8 +57,7 @@ func App() *buffalo.App {
 		app.Resource("/api/v1/properties", PropertiesResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms", RoomsResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
-		app.Resource("/api/v1/room_occupancies", RoomOccupanciesResource{})
-		app.Resource("/api/v1/room_occupancies/{room_occupancy_id}/payments", PaymentsResource{})
+		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments", PaymentsResource{})
 	}
 
 	return app
