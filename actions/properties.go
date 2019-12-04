@@ -6,7 +6,6 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
-	"github.com/gobuffalo/pop/slices"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -66,8 +65,6 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 		}
 	}
 
-	tx.Load(&property.Rooms[0], "Tenants")
-
 	return c.Render(http.StatusOK, r.JSON(property))
 }
 
@@ -76,7 +73,7 @@ func (v PropertiesResource) Create(c buffalo.Context) error {
 		Users: models.Users{
 			models.User{ID: helpers.ParseUUID(c.Value("current_user_id").(string))},
 		},
-		Data: slices.Map{},
+		// Data: slices.Map{},
 	}
 
 	if err := c.Bind(property); err != nil {
