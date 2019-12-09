@@ -62,8 +62,16 @@ func (v PaymentsResource) Create(c buffalo.Context) error {
 		return err
 	}
 
-	tx, q := v.getTransactionAndQueryContext(c)
+	tx, _ := v.getTransactionAndQueryContext(c)
 
+	q := tx.Q().
+		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("room_occupancies.user_id = ?", c.Param("tenant_id")).
+		Where("rooms.id = ?", c.Param("room_id")).
+		Where("properties.id = ?", c.Param("property_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	// Check that user has ownership of tenant and that tenant exists
 	err := q.First(&models.RoomOccupancy{})
 	if err != nil {

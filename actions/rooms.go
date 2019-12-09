@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
@@ -55,12 +54,10 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 
 	room := &models.Room{}
 	if c.Param("eager") == "true" {
-		fmt.Println("hello")
 		if err := q.Eager().Find(room, c.Param("room_id")); err != nil {
 			return err
 		}
 	} else {
-		fmt.Println("hey")
 		if err := q.Find(room, c.Param("room_id")); err != nil {
 			return err
 		}
@@ -78,9 +75,13 @@ func (v RoomsResource) Create(c buffalo.Context) error {
 		return err
 	}
 
-	tx, q := v.getTransactionAndQueryContext(c)
+	tx, _ := v.getTransactionAndQueryContext(c)
 
 	// Check that user has ownership of property and that property exists
+	q := tx.Q().
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
+		Where("properties.id = ?", c.Param("property_id"))
 	err := q.First(&models.Property{})
 	if err != nil {
 		verrs := validate.NewErrors()

@@ -73,8 +73,14 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 		return err
 	}
 
-	tx, q := v.getTransactionAndQueryContext(c)
+	tx, _ := v.getTransactionAndQueryContext(c)
 
+	q := tx.Q().
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("rooms.id = ?", c.Param("room_id")).
+		Where("properties.id = ?", c.Param("property_id")).
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	err := q.First(&models.Room{})
 	if err != nil {
 		verrs := validate.NewErrors()
