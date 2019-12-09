@@ -9,6 +9,7 @@ import (
 	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/slices"
+	"github.com/gobuffalo/validate"
 	"github.com/gofrs/uuid"
 	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
@@ -19,17 +20,10 @@ type TenantsResource struct {
 	buffalo.Resource
 }
 
-func (v TenantsResource) List(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+func (v TenantsResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.Connection, *pop.Query) {
+	tx, _ := c.Value("tx").(*pop.Connection)
 
-	users := &models.Users{}
-
-	// Paginate results. Params "page" and "per_page" control pagination.
-	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params()).
+	return tx, tx.Q().
 		InnerJoin("room_occupancies", "room_occupancies.user_id = users.id").
 		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
 		InnerJoin("properties", "properties.id = rooms.property_id").
@@ -37,6 +31,16 @@ func (v TenantsResource) List(c buffalo.Context) error {
 		Where("rooms.id = ?", c.Param("room_id")).
 		Where("properties.id = ?", c.Param("property_id")).
 		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
+}
+
+func (v TenantsResource) List(c buffalo.Context) error {
+	_, q := v.getTransactionAndQueryContext(c)
+
+	users := &models.Users{}
+
+	// Paginate results. Params "page" and "per_page" control pagination.
+	// Default values are "page=1" and "per_page=20".
+	q = q.PaginateFromParams(c.Params())
 	if err := q.All(users); err != nil {
 		return err
 	}
@@ -48,20 +52,9 @@ func (v TenantsResource) List(c buffalo.Context) error {
 }
 
 func (v TenantsResource) Show(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	_, q := v.getTransactionAndQueryContext(c)
 
 	user := &models.User{}
-	q := tx.Q().
-		InnerJoin("room_occupancies", "room_occupancies.user_id = users.id").
-		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
-		InnerJoin("properties", "properties.id = rooms.property_id").
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("rooms.id = ?", c.Param("room_id")).
-		Where("properties.id = ?", c.Param("property_id")).
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	if err := q.Find(user, c.Param("tenant_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
@@ -76,11 +69,17 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 		},
 		Data: slices.Map{},
 	}
-
-	// TODO: check user has ownership of property
-
 	if err := c.Bind(user); err != nil {
 		return err
+	}
+
+	tx, q := v.getTransactionAndQueryContext(c)
+
+	err := q.First(&models.Room{})
+	if err != nil {
+		verrs := validate.NewErrors()
+		verrs.Add("room", "Room does not exist")
+		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
 
 	// start of generating random credential on auth server
@@ -126,20 +125,9 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 }
 
 func (v TenantsResource) Update(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, q := v.getTransactionAndQueryContext(c)
 
 	user := &models.User{}
-	q := tx.Q().
-		InnerJoin("room_occupancies", "room_occupancies.user_id = users.id").
-		InnerJoin("rooms", "rooms.id = room_occupancies.room_id").
-		InnerJoin("properties", "properties.id = rooms.property_id").
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("rooms.id = ?", c.Param("room_id")).
-		Where("properties.id = ?", c.Param("property_id")).
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	if err := q.Find(user, c.Param("tenant_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
@@ -162,14 +150,11 @@ func (v TenantsResource) Update(c buffalo.Context) error {
 }
 
 func (v TenantsResource) Destroy(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, q := v.getTransactionAndQueryContext(c)
 
 	user := &models.User{}
 
-	if err := tx.Find(user, c.Param("tenant_id")); err != nil {
+	if err := q.Find(user, c.Param("tenant_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 

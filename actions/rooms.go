@@ -85,6 +85,7 @@ func (v RoomsResource) Create(c buffalo.Context) error {
 	if err != nil {
 		verrs := validate.NewErrors()
 		verrs.Add("property", "Property does not exist")
+		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
 
 	verrs, err := tx.ValidateAndCreate(room)
