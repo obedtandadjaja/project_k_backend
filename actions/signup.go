@@ -52,7 +52,10 @@ func Signup(c buffalo.Context) error {
 		return err
 	}
 
-	if res.StatusCode != http.StatusCreated {
+	if res.StatusCode == http.StatusBadRequest {
+		verrs.Add("email", "Email has been taken")
+		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
+	} else if res.StatusCode != http.StatusCreated {
 		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
 	}
 
