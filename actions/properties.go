@@ -1,11 +1,11 @@
 package actions
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/pop/slices"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -14,20 +14,23 @@ type PropertiesResource struct {
 	buffalo.Resource
 }
 
+func (v PropertiesResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.Connection, *pop.Query) {
+	tx, _ := c.Value("tx").(*pop.Connection)
+
+	return tx, tx.Q().
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
+}
+
 func (v PropertiesResource) List(c buffalo.Context) error {
 	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	_, q := v.getTransactionAndQueryContext(c)
 
 	properties := &models.Properties{}
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params()).
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
+	q = q.PaginateFromParams(c.Params())
 	if c.Param("eager") == "true" {
 		if err := q.Eager("Rooms.Tenants").All(properties); err != nil {
 			return err
@@ -45,16 +48,10 @@ func (v PropertiesResource) List(c buffalo.Context) error {
 }
 
 func (v PropertiesResource) Show(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	_, q := v.getTransactionAndQueryContext(c)
 
 	property := &models.Property{}
 
-	q := tx.Q().
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 	if c.Param("eager") == "true" {
 		if err := q.Eager().Find(property, c.Param("property_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
@@ -73,17 +70,14 @@ func (v PropertiesResource) Create(c buffalo.Context) error {
 		Users: models.Users{
 			models.User{ID: helpers.ParseUUID(c.Value("current_user_id").(string))},
 		},
-		// Data: slices.Map{},
+		Data: slices.Map{},
 	}
 
 	if err := c.Bind(property); err != nil {
 		return err
 	}
 
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, _ := v.getTransactionAndQueryContext(c)
 
 	verrs, err := tx.ValidateAndCreate(property)
 	if err != nil {
@@ -99,16 +93,10 @@ func (v PropertiesResource) Create(c buffalo.Context) error {
 }
 
 func (v PropertiesResource) Update(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, q := v.getTransactionAndQueryContext(c)
 
 	property := &models.Property{}
-	err := tx.Q().
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
-		Find(property, c.Param("property_id"))
+	err := q.Find(property, c.Param("property_id"))
 	if err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
@@ -131,14 +119,11 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 }
 
 func (v PropertiesResource) Destroy(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, q := v.getTransactionAndQueryContext(c)
 
 	property := &models.Property{}
 
-	if err := tx.Find(property, c.Param("property_id")); err != nil {
+	if err := q.Find(property, c.Param("property_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
