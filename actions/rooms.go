@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/slices"
+	"github.com/gobuffalo/validate"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -15,22 +16,24 @@ type RoomsResource struct {
 	buffalo.Resource
 }
 
+func (v RoomsResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.Connection, *pop.Query) {
+	tx, _ := c.Value("tx").(*pop.Connection)
+
+	return tx, tx.Q().
+		InnerJoin("properties", "properties.id = rooms.property_id").
+		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
+		Where("properties.id = ?", c.Param("property_id"))
+}
+
 func (v RoomsResource) List(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	_, q := v.getTransactionAndQueryContext(c)
 
 	rooms := &models.Rooms{}
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params()).
-		InnerJoin("properties", "properties.id = rooms.property_id").
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
-		Where("properties.id = ?", c.Param("property_id"))
+	q = q.PaginateFromParams(c.Params())
 	if c.Param("eager") == "true" {
 		if err := q.Eager().All(rooms); err != nil {
 			return err
@@ -48,17 +51,9 @@ func (v RoomsResource) List(c buffalo.Context) error {
 }
 
 func (v RoomsResource) Show(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	_, q := v.getTransactionAndQueryContext(c)
 
 	room := &models.Room{}
-	q := tx.Q().
-		InnerJoin("properties", "properties.id = rooms.property_id").
-		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
-		Where("properties.id = ?", c.Param("property_id"))
 	if c.Param("eager") == "true" {
 		fmt.Println("hello")
 		if err := q.Eager().Find(room, c.Param("room_id")); err != nil {
@@ -79,16 +74,17 @@ func (v RoomsResource) Create(c buffalo.Context) error {
 		Property: &models.Property{ID: helpers.ParseUUID(c.Param("property_id"))},
 		Data:     slices.Map{},
 	}
-
-	// TODO: check user has ownership of property
-
 	if err := c.Bind(room); err != nil {
 		return err
 	}
 
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
+	tx, q := v.getTransactionAndQueryContext(c)
+
+	// Check that user has ownership of property and that property exists
+	err := q.First(&models.Property{})
+	if err != nil {
+		verrs := validate.NewErrors()
+		verrs.Add("property", "Property does not exist")
 	}
 
 	verrs, err := tx.ValidateAndCreate(room)
@@ -105,14 +101,11 @@ func (v RoomsResource) Create(c buffalo.Context) error {
 }
 
 func (v RoomsResource) Update(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, q := v.getTransactionAndQueryContext(c)
 
 	room := &models.Room{}
 
-	if err := tx.Find(room, c.Param("room_id")); err != nil {
+	if err := q.Find(room, c.Param("room_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -134,14 +127,11 @@ func (v RoomsResource) Update(c buffalo.Context) error {
 }
 
 func (v RoomsResource) Destroy(c buffalo.Context) error {
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return fmt.Errorf("no transaction found")
-	}
+	tx, q := v.getTransactionAndQueryContext(c)
 
 	room := &models.Room{}
 
-	if err := tx.Find(room, c.Param("room_id")); err != nil {
+	if err := q.Find(room, c.Param("room_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
