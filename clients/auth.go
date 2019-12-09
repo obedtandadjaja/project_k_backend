@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gobuffalo/envy"
+	"github.com/gofrs/uuid"
 )
 
 type AuthClient struct {
@@ -53,6 +54,27 @@ func (authClient *AuthClient) CreateCredential(r *CreateCredentialRequest) (*htt
 		"application/json",
 		bytes.NewBuffer(requestBody),
 	)
+
+	return res, err
+}
+
+// update credentials
+type UpdateCredentialRequest struct {
+	CredentialUUID uuid.UUID `json:"uuid"`
+	Email          string    `json:"email"`
+	Phone          string    `json:"phone"`
+}
+
+func (authClient *AuthClient) UpdateCredential(r *UpdateCredentialRequest) (*http.Response, error) {
+	requestBody, err := json.Marshal(r)
+
+	client := &http.Client{}
+	request, err := http.NewRequest(
+		"PUT",
+		authClient.AuthAPIUrl+"/credentials/"+r.CredentialUUID.String(),
+		bytes.NewBuffer(requestBody),
+	)
+	res, err := client.Do(request)
 
 	return res, err
 }
