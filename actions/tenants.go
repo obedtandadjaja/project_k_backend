@@ -36,30 +36,42 @@ func (v TenantsResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.
 func (v TenantsResource) List(c buffalo.Context) error {
 	_, q := v.getTransactionAndQueryContext(c)
 
-	users := &models.Users{}
+	tenants := &models.Users{}
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
-	if err := q.All(users); err != nil {
-		return err
+	if c.Param("eager") == "true" {
+		if err := q.Eager().All(tenants); err != nil {
+			return err
+		}
+	} else {
+		if err := q.All(tenants); err != nil {
+			return err
+		}
 	}
 
 	// Add the paginator to the context so it can be used in the template.
 	c.Set("pagination", q.Paginator)
 
-	return c.Render(http.StatusOK, r.JSON(users))
+	return c.Render(http.StatusOK, r.JSON(tenants))
 }
 
 func (v TenantsResource) Show(c buffalo.Context) error {
 	_, q := v.getTransactionAndQueryContext(c)
 
-	user := &models.User{}
-	if err := q.Find(user, c.Param("tenant_id")); err != nil {
-		return c.Error(http.StatusNotFound, err)
+	tenant := &models.User{}
+	if c.Param("eager") == "true" {
+		if err := q.Eager().Find(tenant, c.Param("tenant_id")); err != nil {
+			return c.Error(http.StatusNotFound, err)
+		}
+	} else {
+		if err := q.Find(tenant, c.Param("tenant_id")); err != nil {
+			return c.Error(http.StatusNotFound, err)
+		}
 	}
 
-	return c.Render(http.StatusOK, r.JSON(user))
+	return c.Render(http.StatusOK, r.JSON(tenant))
 }
 
 func (v TenantsResource) Create(c buffalo.Context) error {

@@ -32,7 +32,7 @@ func (v PropertiesResource) List(c buffalo.Context) error {
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
 	if c.Param("eager") == "true" {
-		if err := q.Eager("Rooms.Tenants").All(properties); err != nil {
+		if err := q.Eager().All(properties); err != nil {
 			return err
 		}
 	} else {
