@@ -33,8 +33,8 @@ func (v RoomsResource) List(c buffalo.Context) error {
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
-	if c.Param("eager") == "true" {
-		if err := q.Eager().All(rooms); err != nil {
+	if c.Param("eager") != "" {
+		if err := q.Eager(c.Param("eager")).All(rooms); err != nil {
 			return err
 		}
 	} else {
@@ -53,8 +53,8 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 	_, q := v.getTransactionAndQueryContext(c)
 
 	room := &models.Room{}
-	if c.Param("eager") == "true" {
-		if err := q.Eager().Find(room, c.Param("room_id")); err != nil {
+	if c.Param("eager") != "" {
+		if err := q.Eager(c.Param("eager")).Find(room, c.Param("room_id")); err != nil {
 			return err
 		}
 	} else {

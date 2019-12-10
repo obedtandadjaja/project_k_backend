@@ -41,8 +41,8 @@ func (v TenantsResource) List(c buffalo.Context) error {
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
-	if c.Param("eager") == "true" {
-		if err := q.Eager().All(tenants); err != nil {
+	if c.Param("eager") != "" {
+		if err := q.Eager(c.Param("eager")).All(tenants); err != nil {
 			return err
 		}
 	} else {
@@ -61,8 +61,8 @@ func (v TenantsResource) Show(c buffalo.Context) error {
 	_, q := v.getTransactionAndQueryContext(c)
 
 	tenant := &models.User{}
-	if c.Param("eager") == "true" {
-		if err := q.Eager().Find(tenant, c.Param("tenant_id")); err != nil {
+	if c.Param("eager") != "" {
+		if err := q.Eager(c.Params("eager")).Find(tenant, c.Param("tenant_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {

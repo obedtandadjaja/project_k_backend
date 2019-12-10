@@ -31,8 +31,8 @@ func (v PropertiesResource) List(c buffalo.Context) error {
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
-	if c.Param("eager") == "true" {
-		if err := q.Eager().All(properties); err != nil {
+	if c.Param("eager") != "" {
+		if err := q.Eager(c.Param("eager")).All(properties); err != nil {
 			return err
 		}
 	} else {
@@ -52,8 +52,8 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 
 	property := &models.Property{}
 
-	if c.Param("eager") == "true" {
-		if err := q.Eager().Find(property, c.Param("property_id")); err != nil {
+	if c.Param("eager") != "" {
+		if err := q.Eager(c.Param("eager")).Find(property, c.Param("property_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {
