@@ -62,7 +62,7 @@ func (v TenantsResource) Show(c buffalo.Context) error {
 
 	tenant := &models.User{}
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Params("eager")).Find(tenant, c.Param("tenant_id")); err != nil {
+		if err := q.Eager(c.Param("eager")).Find(tenant, c.Param("tenant_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {
