@@ -21,7 +21,7 @@ type Room struct {
 	Data            slices.Map `json:"data,omitempty" db:"data"`
 	CreatedAt       time.Time  `json:"createdAt,omitempty" db:"created_at"`
 	UpdatedAt       time.Time  `json:"updatedAt,omitempty" db:"updated_at"`
-	Type            string     `json:"type" db:"type"`
+	Type            string     `json:"type,omitempty" db:"type"`
 	Tenants         []User     `json:"tenants" many_to_many:"room_occupancies"`
 }
 

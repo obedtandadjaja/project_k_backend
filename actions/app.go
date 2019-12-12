@@ -56,6 +56,7 @@ func App() *buffalo.App {
 		app.Resource("/api/v1/users", UsersResource{})
 		app.Resource("/api/v1/properties", PropertiesResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms", RoomsResource{})
+		app.POST("/api/v1/properties/{property_id}/rooms/batch", RoomsResource{}.BatchCreate)
 		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments", PaymentsResource{})
 	}
