@@ -1,0 +1,19 @@
+[[scenario]]
+  name = "room"
+
+  [[scenario.table]]
+    name = "rooms"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "room"
+      price_amount = 10000000
+      payment_schedule = "monthly"
+      type = "Type A"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+      [[scenario.table.row.data.facilities]]
+        name = "facility 1"
+      [[scenario.table.row.data.facilities]]
+        name = "facility 2"
