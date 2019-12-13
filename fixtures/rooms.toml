@@ -5,7 +5,7 @@
     name = "rooms"
 
     [[scenario.table.row]]
-      id = "<%= uuid() %>"
+      id = "<%= uuid("room") %>"
       name = "room"
       price_amount = 10000000
       payment_schedule = "monthly"

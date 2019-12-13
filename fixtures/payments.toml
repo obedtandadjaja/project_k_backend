@@ -1,0 +1,12 @@
+[[scenario]]
+  name = "payment"
+
+  [[scenario.table]]
+    name = "payments"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("payment") %>"
+      amount = 10000000
+      description = "Description"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
