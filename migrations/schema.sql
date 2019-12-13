@@ -3,33 +3,21 @@
 --
 
 -- Dumped from database version 9.6.1
--- Dumped by pg_dump version 9.6.1
+-- Dumped by pg_dump version 12.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: 
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
@@ -43,7 +31,7 @@ COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: 
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
@@ -56,34 +44,31 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
-SET search_path = public, pg_catalog;
-
 SET default_tablespace = '';
-
-SET default_with_oids = false;
 
 --
 -- Name: payments; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE payments (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.payments (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     amount integer NOT NULL,
     description character varying(255),
     room_occupancy_id uuid NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    payment_date date NOT NULL
 );
 
 
-ALTER TABLE payments OWNER TO postgres;
+ALTER TABLE public.payments OWNER TO postgres;
 
 --
 -- Name: properties; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE properties (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.properties (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying(255) NOT NULL,
     type character varying(255) NOT NULL,
     address character varying(255) NOT NULL,
@@ -93,14 +78,14 @@ CREATE TABLE properties (
 );
 
 
-ALTER TABLE properties OWNER TO postgres;
+ALTER TABLE public.properties OWNER TO postgres;
 
 --
 -- Name: room_occupancies; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE room_occupancies (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.room_occupancies (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     room_id uuid NOT NULL,
     terminated_at timestamp without time zone,
@@ -110,43 +95,44 @@ CREATE TABLE room_occupancies (
 );
 
 
-ALTER TABLE room_occupancies OWNER TO postgres;
+ALTER TABLE public.room_occupancies OWNER TO postgres;
 
 --
 -- Name: rooms; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE rooms (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.rooms (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     property_id uuid NOT NULL,
     name character varying(255) NOT NULL,
     price_amount integer NOT NULL,
     payment_schedule character varying(255) NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    type character varying(255)
 );
 
 
-ALTER TABLE rooms OWNER TO postgres;
+ALTER TABLE public.rooms OWNER TO postgres;
 
 --
 -- Name: schema_migration; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE schema_migration (
+CREATE TABLE public.schema_migration (
     version character varying(14) NOT NULL
 );
 
 
-ALTER TABLE schema_migration OWNER TO postgres;
+ALTER TABLE public.schema_migration OWNER TO postgres;
 
 --
 -- Name: user_property_relationships; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE user_property_relationships (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.user_property_relationships (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid NOT NULL,
     property_id uuid NOT NULL,
     type character varying(255) DEFAULT 'owner'::character varying NOT NULL,
@@ -155,14 +141,14 @@ CREATE TABLE user_property_relationships (
 );
 
 
-ALTER TABLE user_property_relationships OWNER TO postgres;
+ALTER TABLE public.user_property_relationships OWNER TO postgres;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE users (
-    id uuid DEFAULT uuid_generate_v4() NOT NULL,
+CREATE TABLE public.users (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name character varying(255),
     credential_uuid uuid,
     email character varying(255) NOT NULL,
@@ -175,13 +161,13 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE users OWNER TO postgres;
+ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payments
+ALTER TABLE ONLY public.payments
     ADD CONSTRAINT payments_pkey PRIMARY KEY (id);
 
 
@@ -189,7 +175,7 @@ ALTER TABLE ONLY payments
 -- Name: properties properties_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY properties
+ALTER TABLE ONLY public.properties
     ADD CONSTRAINT properties_pkey PRIMARY KEY (id);
 
 
@@ -197,7 +183,7 @@ ALTER TABLE ONLY properties
 -- Name: room_occupancies room_occupancies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY room_occupancies
+ALTER TABLE ONLY public.room_occupancies
     ADD CONSTRAINT room_occupancies_pkey PRIMARY KEY (id);
 
 
@@ -205,7 +191,7 @@ ALTER TABLE ONLY room_occupancies
 -- Name: rooms rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY rooms
+ALTER TABLE ONLY public.rooms
     ADD CONSTRAINT rooms_pkey PRIMARY KEY (id);
 
 
@@ -213,7 +199,7 @@ ALTER TABLE ONLY rooms
 -- Name: user_property_relationships user_property_relationships_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY user_property_relationships
+ALTER TABLE ONLY public.user_property_relationships
     ADD CONSTRAINT user_property_relationships_pkey PRIMARY KEY (id);
 
 
@@ -221,77 +207,84 @@ ALTER TABLE ONLY user_property_relationships
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rooms_type_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX rooms_type_idx ON public.rooms USING btree (type);
 
 
 --
 -- Name: schema_migration_version_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX schema_migration_version_idx ON schema_migration USING btree (version);
+CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USING btree (version);
 
 
 --
 -- Name: users_credential_uuid_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX users_credential_uuid_idx ON users USING btree (credential_uuid);
+CREATE INDEX users_credential_uuid_idx ON public.users USING btree (credential_uuid);
 
 
 --
 -- Name: users_email_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX users_email_idx ON users USING btree (email);
+CREATE UNIQUE INDEX users_email_idx ON public.users USING btree (email);
 
 
 --
 -- Name: payments payments_room_occupancy_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY payments
-    ADD CONSTRAINT payments_room_occupancy_id_fkey FOREIGN KEY (room_occupancy_id) REFERENCES room_occupancies(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.payments
+    ADD CONSTRAINT payments_room_occupancy_id_fkey FOREIGN KEY (room_occupancy_id) REFERENCES public.room_occupancies(id) ON DELETE CASCADE;
 
 
 --
 -- Name: room_occupancies room_occupancies_room_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY room_occupancies
-    ADD CONSTRAINT room_occupancies_room_id_fkey FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.room_occupancies
+    ADD CONSTRAINT room_occupancies_room_id_fkey FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE;
 
 
 --
 -- Name: room_occupancies room_occupancies_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY room_occupancies
-    ADD CONSTRAINT room_occupancies_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.room_occupancies
+    ADD CONSTRAINT room_occupancies_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
 -- Name: rooms rooms_property_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY rooms
-    ADD CONSTRAINT rooms_property_id_fkey FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.rooms
+    ADD CONSTRAINT rooms_property_id_fkey FOREIGN KEY (property_id) REFERENCES public.properties(id) ON DELETE CASCADE;
 
 
 --
 -- Name: user_property_relationships user_property_relationships_property_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY user_property_relationships
-    ADD CONSTRAINT user_property_relationships_property_id_fkey FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.user_property_relationships
+    ADD CONSTRAINT user_property_relationships_property_id_fkey FOREIGN KEY (property_id) REFERENCES public.properties(id) ON DELETE CASCADE;
 
 
 --
 -- Name: user_property_relationships user_property_relationships_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY user_property_relationships
-    ADD CONSTRAINT user_property_relationships_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.user_property_relationships
+    ADD CONSTRAINT user_property_relationships_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
