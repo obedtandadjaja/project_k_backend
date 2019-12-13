@@ -15,10 +15,11 @@ type Payment struct {
 	ID              uuid.UUID      `json:"id" db:"id"`
 	Amount          int            `json:"amount" db:"amount"`
 	Description     nulls.String   `json:"description" db:"description"`
-	RoomOccupancyID uuid.UUID      `json:"room_occupancy_id" db:"room_occupancy_id"`
-	RoomOccupancy   *RoomOccupancy `json:"room_occupancy,omitempty" belongs_to:"room_occupancy"`
-	CreatedAt       time.Time      `json:"created_at" db:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at" db:"updated_at"`
+	RoomOccupancyID uuid.UUID      `json:"roomOccupancyId" db:"room_occupancy_id"`
+	RoomOccupancy   *RoomOccupancy `json:"roomOccupancy,omitempty" belongs_to:"room_occupancy"`
+	PaymentDate     time.Time      `json:"paymentDate,omitempty" db:"payment_date"`
+	CreatedAt       time.Time      `json:"createdAt" db:"created_at"`
+	UpdatedAt       time.Time      `json:"updatedAt" db:"updated_at"`
 }
 
 // String is not required by pop and may be deleted

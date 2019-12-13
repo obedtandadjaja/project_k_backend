@@ -1,0 +1,1 @@
+drop_column("payments", "payment_date", "date", {})
