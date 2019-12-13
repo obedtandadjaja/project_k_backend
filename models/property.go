@@ -17,8 +17,8 @@ type Property struct {
 	Type      string     `json:"type" db:"type"`
 	Address   string     `json:"address" db:"address"`
 	Data      slices.Map `json:"data,omitempty" db:"data"`
-	CreatedAt time.Time  `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at,omitempty" db:"updated_at"`
+	CreatedAt time.Time  `json:"createdAt,omitempty" db:"created_at"`
+	UpdatedAt time.Time  `json:"updatedAt,omitempty" db:"updated_at"`
 	Users     []User     `json:"users" many_to_many:"user_property_relationships"`
 	Rooms     []Room     `json:"rooms" has_many:"rooms"`
 }

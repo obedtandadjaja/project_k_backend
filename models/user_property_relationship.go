@@ -16,8 +16,8 @@ type UserPropertyRelationship struct {
 	PropertyID uuid.UUID `json:"property_id" db:"property_id"`
 	Property   *Property `json:"property,omitempty" belongs_to:"property"`
 	Type       string    `json:"type" db:"type"`
-	CreatedAt  time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+	CreatedAt  time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt  time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 // String is not required by pop and may be deleted

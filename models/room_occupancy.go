@@ -16,10 +16,10 @@ type RoomOccupancy struct {
 	User         *User      `json:"user,omitempty" belongs_to:"user"`
 	RoomID       uuid.UUID  `json:"room_id" db:"room_id"`
 	Room         *Room      `json:"room,omitempty" belongs_to:"room"`
-	TerminatedAt nulls.Time `json:"terminated_at" db:"terminated_at"`
+	TerminatedAt nulls.Time `json:"terminatedAt" db:"terminated_at"`
 	Type         string     `json:"type" db:"type"`
-	CreatedAt    time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at" db:"updated_at"`
+	CreatedAt    time.Time  `json:"createdAt" db:"created_at"`
+	UpdatedAt    time.Time  `json:"updatedAt" db:"updated_at"`
 	Payments     []Payment  `json:"payments" has_many:"payments"`
 }
 
