@@ -1,0 +1,18 @@
+[[scenario]]
+  name = "property"
+
+  [[scenario.table]]
+    name = "properties"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("property") %>"
+      name = "property"
+      type = "apartment"
+      address = "123 Street Ave, San Francisco, CA 94085"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+      [[scenario.table.row.data.sharedFacilities]]
+        name = "facility 1"
+      [[scenario.table.row.data.sharedFacilities]]
+        name = "facility 2"
