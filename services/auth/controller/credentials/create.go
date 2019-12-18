@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/lib/pq"
-	"github.com/obedtandadjaja/project_k_backend/services/auth/helpers/jwt"
 	"github.com/obedtandadjaja/project_k_backend/services/auth/controller"
+	"github.com/obedtandadjaja/project_k_backend/services/auth/helpers/jwt"
 	"github.com/obedtandadjaja/project_k_backend/services/auth/models/credential"
 	"github.com/obedtandadjaja/project_k_backend/services/auth/models/session"
 )

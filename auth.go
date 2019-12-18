@@ -1,37 +1,45 @@
 package clients
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"net/http"
-
-	"github.com/gobuffalo/envy"
-	"github.com/gofrs/uuid"
-
-	"github.com/obedtandadjaja/project_k_backend/services/auth/controller/credentials/create"
-	"github.com/obedtandadjaja/project_k_backend/services/auth/controller/credentials/update"
 )
 
-type AuthClient struct{}
+type AuthClient struct {
+}
 
 var authClient *AuthClient
 
 func NewAuthClient() *AuthClient {
-	if authClient != nil {
-		return authClient
-	}
+    if authClient != nil {
+        return authClient
+    }
 
-	return &AuthClient{}
+    return &AuthClient{}
 }
 
 // create credentials
-func (authClient *AuthClient) CreateCredential(r *create.CreateRequest) (*create.CreateResponse, error) {
-	return create.processCreateRequest(r)
+func (authClient *AuthClient) CreateCredential(r *CreateCredentialRequest) (*http.Response, error) {
+    services.auth.controller.credentials.Create(r)
 }
 
 // update credentials
+type UpdateCredentialRequest struct {
+	CredentialUUID uuid.UUID `json:"uuid"`
+	Email          string    `json:"email"`
+	Phone          string    `json:"phone"`
+}
+
 func (authClient *AuthClient) UpdateCredential(r *UpdateCredentialRequest) (*http.Response, error) {
+	requestBody, err := json.Marshal(r)
+
+	client := &http.Client{}
+	request, err := http.NewRequest(
+		"PUT",
+		authClient.AuthAPIUrl+"/credentials/"+r.CredentialUUID.String(),
+		bytes.NewBuffer(requestBody),
+	)
+	res, err := client.Do(request)
+
+	return res, err
 }
 
 // login
