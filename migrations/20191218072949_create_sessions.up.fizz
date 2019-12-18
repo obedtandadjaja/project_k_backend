@@ -1,0 +1,8 @@
+create_table("sessions") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("credential_id", "uuid", {})
+	t.Column("ip_address", "string", {null: true})
+	t.Column("user_agent", "string", {null: true})
+	t.Column("last_accessed_at", "timestamp", {})
+	t.Timestamps()
+}

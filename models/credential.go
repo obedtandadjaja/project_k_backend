@@ -12,14 +12,15 @@ import (
 
 type Credential struct {
 	ID                          uuid.UUID    `json:"id" db:"id"`
-	Password                    nulls.String `json:"password" db:"password"`
+	Password                    nulls.String `json:"password,omitempty" db:"password"`
 	FailedAttempts              int          `json:"failedAttempts" db:"failed_attempts"`
-	LockedUntil                 nulls.Time   `json:"lockedUntil" db:"locked_until"`
-	PasswordResetToken          nulls.String `json:"passwordResetToken" db:"password_reset_token"`
-	PasswordResetTokenExpiresAt nulls.Time   `json:"passwordResetTokenExpiresAt" db:"password_reset_token_expires_at"`
+	LockedUntil                 nulls.Time   `json:"lockedUntil,omitempty" db:"locked_until"`
+	PasswordResetToken          nulls.String `json:"passwordResetToken,omitempty" db:"password_reset_token"`
+	PasswordResetTokenExpiresAt nulls.Time   `json:"passwordResetTokenExpiresAt,omitempty" db:"password_reset_token_expires_at"`
 	CreatedAt                   time.Time    `json:"createdAt" db:"created_at"`
 	UpdatedAt                   time.Time    `json:"updatedAt" db:"updated_at"`
-	User                        *User        `json:"user" belongs_to:"user"`
+	User                        *User        `json:"user,omitempty" belongs_to:"user"`
+	Sessions                    []Session    `json:"sessions,omitempty" has_many:"sessions"`
 }
 
 // String is not required by pop and may be deleted
