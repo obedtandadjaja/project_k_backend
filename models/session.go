@@ -14,8 +14,8 @@ type Session struct {
 	ID             uuid.UUID    `json:"id" db:"id"`
 	CredentialID   uuid.UUID    `json:"credentialId" db:"credential_id"`
 	Credential     *Credential  `json:"credential" belongs_to:"credential"`
-	IpAddress      nulls.String `json:"ipAddress" db:"ip_address"`
-	UserAgent      nulls.String `json:"userAgent" db:"user_agent"`
+	IpAddress      nulls.String `json:"ipAddress,omitempty" db:"ip_address"`
+	UserAgent      nulls.String `json:"userAgent,omitempty" db:"user_agent"`
 	LastAccessedAt time.Time    `json:"lastAccessedAt" db:"last_accessed_at"`
 	CreatedAt      time.Time    `json:"createdAt" db:"created_at"`
 	UpdatedAt      time.Time    `json:"updatedAt" db:"updated_at"`
