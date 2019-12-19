@@ -17,7 +17,7 @@ type DeleteResponse struct {
 	CredentialID uuid.UUID `json:"credential_id"`
 }
 
-func processDeleteRequest(tx *pop.Connection, request *DeleteRequest) (*DeleteResponse, error) {
+func Delete(tx *pop.Connection, request *DeleteRequest) (*DeleteResponse, error) {
 	var response DeleteResponse
 
 	cred := &models.Credential{}

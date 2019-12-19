@@ -18,7 +18,7 @@ type InitiatePasswordResetResponse struct {
 	PasswordResetToken string `json:"password_reset_token"`
 }
 
-func processInitiatePasswordResetRequest(tx *pop.Connection, request *InitiatePasswordResetRequest) (*InitiatePasswordResetResponse, error) {
+func InitiatePasswordReset(tx *pop.Connection, request *InitiatePasswordResetRequest) (*InitiatePasswordResetResponse, error) {
 	var response InitiatePasswordResetResponse
 
 	cred := models.Credential{}

@@ -1,10 +1,10 @@
 package actions
 
 import (
-	"encoding/json"
-	"net/http"
+	"errors"
 
-	"github.com/obedtandadjaja/project_k_backend/services/auth/helpers/jwt"
+	"github.com/gofrs/uuid"
+	"github.com/obedtandadjaja/project_k_backend/helpers"
 )
 
 type VerifySessionTokenRequest struct {
@@ -12,41 +12,18 @@ type VerifySessionTokenRequest struct {
 }
 
 type VerifySessionTokenResponse struct {
-	CredentialUuid string `json:"credential_uuid"`
+	CredentialID uuid.UUID `json:"credential_uuid"`
 }
 
-func VerifySessionToken(sr *SharedResources, w http.ResponseWriter, r *http.Request) error {
-	request, err := parseVerifySessionTokenRequest(r)
-	if err != nil {
-		return HandlerError{400, "", err}
-	}
-
-	response, err := processVerifySessionTokenRequest(sr, request)
-	if err != nil {
-		return err
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-
-	return nil
-}
-
-func parseVerifySessionTokenRequest(r *http.Request) (*VerifySessionTokenRequest, error) {
-	var request VerifySessionTokenRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-
-	return &request, err
-}
-
-func processVerifySessionTokenRequest(sr *SharedResources, request *VerifySessionTokenRequest) (*VerifySessionTokenResponse, error) {
+func VerifySessionToken(request *VerifySessionTokenRequest) (*VerifySessionTokenResponse, error) {
 	var response VerifySessionTokenResponse
 
-	credentialUuid, _, err := jwt.VerifySessionToken(request.SessionJwt)
+	credentialID, _, err := helpers.VerifySessionToken(request.SessionJwt)
 	if err != nil {
-		return &response, HandlerError{401, "Invalid session token", err}
+		return &response, errors.New("Invalid session token")
 	}
 
-	response.CredentialUuid = credentialUuid
+	credentialUUID, _ := uuid.FromString(credentialID)
+	response.CredentialID = credentialUUID
 	return &response, nil
 }
