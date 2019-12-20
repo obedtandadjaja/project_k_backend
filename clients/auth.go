@@ -20,7 +20,6 @@ func NewAuthClient() *AuthClient {
 	return &AuthClient{}
 }
 
-// create credentials
 func (authClient *AuthClient) CreateCredential(tx *pop.Connection, request *credentials.CreateRequest, r http.Request) (*credentials.CreateResponse, error) {
 	return credentials.Create(tx, request, r)
 }
