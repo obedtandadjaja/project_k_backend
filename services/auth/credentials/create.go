@@ -19,7 +19,7 @@ type CreateResponse struct {
 	SessionJwt   string    `json:"session"`
 }
 
-func Create(tx *pop.Connection, request *CreateRequest, r http.Request) (*CreateResponse, error) {
+func Create(tx *pop.Connection, request *CreateRequest, r *http.Request) (*CreateResponse, error) {
 	var response CreateResponse
 
 	hashedPassword, _ := helpers.HashPassword(request.Password)

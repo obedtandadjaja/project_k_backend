@@ -20,11 +20,11 @@ func NewAuthClient() *AuthClient {
 	return &AuthClient{}
 }
 
-func (authClient *AuthClient) CreateCredential(tx *pop.Connection, request *credentials.CreateRequest, r http.Request) (*credentials.CreateResponse, error) {
+func (authClient *AuthClient) CreateCredential(tx *pop.Connection, request *credentials.CreateRequest, r *http.Request) (*credentials.CreateResponse, error) {
 	return credentials.Create(tx, request, r)
 }
 
-func (authClient *AuthClient) Login(tx *pop.Connection, request *authService.LoginRequest, r http.Request) (*authService.LoginResponse, error) {
+func (authClient *AuthClient) Login(tx *pop.Connection, request *authService.LoginRequest, r *http.Request) (*authService.LoginResponse, error) {
 	return authService.Login(tx, request, r)
 }
 

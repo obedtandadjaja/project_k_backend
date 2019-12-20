@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
+	authService "github.com/obedtandadjaja/project_k_backend/services/auth"
 )
 
 type LoginRequest struct {
@@ -41,36 +41,29 @@ func Login(c buffalo.Context) error {
 		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
 
-	res, err := clients.NewAuthClient().Login(
-		&clients.LoginRequest{
-			Email:    req.Email,
-			Password: req.Password,
-		},
-	)
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode == http.StatusUnauthorized {
-		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
-	} else if res.StatusCode != http.StatusOK {
-		return c.Render(http.StatusInternalServerError, r.JSON(res.StatusCode))
-	}
-
-	var resBody map[string]interface{}
-	json.NewDecoder(res.Body).Decode(&resBody)
-
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
 	}
 
 	user := &models.User{}
-	if err := tx.Select("id").Where("credential_uuid = ?", resBody["credential_uuid"].(string)).First(user); err != nil {
-		return c.Error(http.StatusUnauthorized, err)
+	if err := tx.Select("id", "credential_uuid").Where("email = ?", req.Email).First(user); err != nil {
+		return c.Error(http.StatusUnauthorized, nil)
 	}
 
-	jwt, err := helpers.GenerateAccessToken(user.ID.String(), resBody["credential_uuid"].(string))
+	res, err := clients.NewAuthClient().Login(
+		tx,
+		&authService.LoginRequest{
+			CredentialID: user.CredentialUUID.UUID,
+			Password:     req.Password,
+		},
+		c.Request(),
+	)
+	if err != nil {
+		return c.Error(http.StatusUnauthorized, nil)
+	}
+
+	jwt, err := helpers.GenerateAccessToken(user.ID.String(), user.CredentialUUID.UUID.String())
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -78,7 +71,7 @@ func Login(c buffalo.Context) error {
 	return c.Render(http.StatusCreated, r.JSON(
 		LoginResponse{
 			Jwt:        jwt,
-			SessionJwt: resBody["session"].(string),
+			SessionJwt: res.SessionJwt,
 			UserID:     user.ID,
 		},
 	))

@@ -27,7 +27,7 @@ type LoginResponse struct {
 	SessionJwt   string    `json:"session"`
 }
 
-func Login(tx *pop.Connection, request *LoginRequest, r http.Request) (*LoginResponse, error) {
+func Login(tx *pop.Connection, request *LoginRequest, r *http.Request) (*LoginResponse, error) {
 	var response LoginResponse
 
 	cred := &models.Credential{}
