@@ -1,17 +1,13 @@
 package actions
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/slices"
 	"github.com/gobuffalo/validate"
-	"github.com/gofrs/uuid"
-	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -79,7 +75,8 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 		Rooms: models.Rooms{
 			models.Room{ID: helpers.ParseUUID(c.Param("room_id"))},
 		},
-		Data: slices.Map{},
+		Data:                slices.Map{},
+		NotificationMethods: []string{"email"},
 	}
 	if err := c.Bind(user); err != nil {
 		return err
@@ -99,30 +96,6 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 		verrs.Add("room", "Room does not exist")
 		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
-
-	// start of generating random credential on auth server
-	dummyPassword, _ := helpers.GenerateRandomString(15)
-	res, err := clients.NewAuthClient().CreateCredential(
-		&clients.CreateCredentialRequest{
-			Email:    user.Email,
-			Phone:    user.Phone.String,
-			Password: dummyPassword,
-		},
-	)
-	if err != nil {
-		return err
-	}
-	if res.StatusCode != http.StatusCreated {
-		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
-	}
-	// end of generating random credential on auth server
-
-	var resBody map[string]interface{}
-	json.NewDecoder(res.Body).Decode(&resBody)
-
-	credentialUUID, _ := uuid.FromString(resBody["credential_uuid"].(string))
-	user.CredentialUUID = nulls.NewUUID(credentialUUID)
-	user.NotificationMethods = []string{"email"}
 
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {

@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
+	authService "github.com/obedtandadjaja/project_k_backend/services/auth"
 )
 
 type TokenRequest struct {
@@ -27,22 +27,13 @@ func Token(c buffalo.Context) error {
 	}
 
 	res, err := clients.NewAuthClient().VerifySessionToken(
-		&clients.VerifySessionTokenRequest{
+		&authService.VerifySessionTokenRequest{
 			SessionJwt: req.SessionJwt,
 		},
 	)
 	if err != nil {
-		return err
+		c.Render(http.StatusUnauthorized, nil)
 	}
-
-	if res.StatusCode == http.StatusUnauthorized {
-		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
-	} else if res.StatusCode != http.StatusOK {
-		return c.Render(http.StatusInternalServerError, r.JSON(res.StatusCode))
-	}
-
-	var resBody map[string]interface{}
-	json.NewDecoder(res.Body).Decode(&resBody)
 
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
@@ -50,11 +41,11 @@ func Token(c buffalo.Context) error {
 	}
 
 	user := &models.User{}
-	if err := tx.Select("id").Where("credential_uuid = ?", resBody["credential_uuid"].(string)).First(user); err != nil {
+	if err := tx.Select("id").Where("credential_uuid = ?", res.CredentialID).First(user); err != nil {
 		return c.Error(http.StatusUnauthorized, err)
 	}
 
-	token, err := helpers.GenerateAccessToken(user.ID.String(), resBody["credential_uuid"].(string))
+	token, err := helpers.GenerateAccessToken(user.ID.String(), res.CredentialID.String())
 	return c.Render(http.StatusCreated, r.JSON(
 		TokenResponse{
 			Jwt: token,
