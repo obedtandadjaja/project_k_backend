@@ -1,8 +1,8 @@
 package actions
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/lib/pq"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
@@ -10,10 +10,10 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"github.com/gofrs/uuid"
 	"github.com/obedtandadjaja/project_k_backend/clients"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
+	"github.com/obedtandadjaja/project_k_backend/services/auth/credentials"
 )
 
 type SignupRequest struct {
@@ -42,47 +42,39 @@ func Signup(c buffalo.Context) error {
 		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
 
-	res, err := clients.NewAuthClient().CreateCredential(
-		&clients.CreateCredentialRequest{
-			Email:    req.Email,
-			Password: req.Password,
-		},
-	)
-	if err != nil {
-		return err
-	}
-
-	if res.StatusCode == http.StatusBadRequest {
-		verrs.Add("email", "Email has been taken")
-		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
-	} else if res.StatusCode != http.StatusCreated {
-		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
-	}
-
-	var resBody map[string]interface{}
-	json.NewDecoder(res.Body).Decode(&resBody)
-
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
 	}
 
-	credentialUUID, _ := uuid.FromString(resBody["credential_uuid"].(string))
+	res, err := clients.NewAuthClient().CreateCredential(
+		tx,
+		&credentials.CreateRequest{
+			Password: req.Password,
+		},
+		c.Request(),
+	)
+	if err != nil {
+		return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
+	}
+
 	user := &models.User{
 		Email:               req.Email,
-		CredentialUUID:      nulls.NewUUID(credentialUUID),
+		CredentialUUID:      nulls.NewUUID(res.CredentialID),
 		NotificationMethods: []string{"email"},
 	}
 
 	err = tx.Create(user)
 	if err != nil {
-		return err
+		if pqerr, ok := err.(*pq.Error); ok && pqerr.Code == "23505" {
+			return c.Render(http.StatusUnprocessableEntity, r.JSON("Email has been taken"))
+		}
 	}
 
-	token, err := helpers.GenerateAccessToken(user.ID.String(), resBody["credential_uuid"].(string))
+	token, err := helpers.GenerateAccessToken(user.ID.String(), res.CredentialID.String())
 	response := SignupResponse{
 		Jwt:        token,
-		SessionJwt: resBody["session"].(string),
+		SessionJwt: res.SessionJwt,
 		UserID:     user.ID.String(),
 	}
 	return c.Render(http.StatusCreated, r.JSON(response))
