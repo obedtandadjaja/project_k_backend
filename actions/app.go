@@ -7,6 +7,7 @@ import (
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	"github.com/rs/cors"
 	"github.com/unrolled/secure"
+	"net/http"
 
 	"github.com/gobuffalo/buffalo-pop/pop/popmw"
 	contenttype "github.com/gobuffalo/mw-contenttype"
@@ -35,6 +36,7 @@ func App() *buffalo.App {
 			}).Handler}
 		}
 
+		// Not turning this on since we do SSL termination at Load Balancer level
 		// Automatically redirect to SSL
 		// app.Use(forceSSL())
 
@@ -79,7 +81,12 @@ func forceSSL() buffalo.MiddlewareFunc {
 func parseAccessToken(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		if jwt := c.Request().Header.Get("Authorization"); jwt != "" {
-			userID, _ := helpers.VerifyAccessToken(jwt)
+			userID, err := helpers.VerifyAccessToken(jwt)
+
+			if err != nil {
+				c.Render(http.StatusUnauthorized, r.JSON("Invalid access token"))
+			}
+
 			c.Set("current_user_id", userID)
 		}
 
