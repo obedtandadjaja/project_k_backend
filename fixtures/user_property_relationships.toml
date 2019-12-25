@@ -1,0 +1,27 @@
+[[scenario]]
+  name = "user_property_relationship"
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "owner"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+[[scenario]]
+  name = "user_property_relationship staff"
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "staff"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
