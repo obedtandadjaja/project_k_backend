@@ -1,0 +1,49 @@
+[[scenario]]
+  name = "room_occupancy"
+
+  [[scenario.table]]
+    name = "room_occupancies"
+
+    [[scenario.row]]
+      id = "<%= uuidNamed("user_room") %>"
+      user_id = "<%= uuidNamed("tenant") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      type = "lease"
+
+[[scenario]]
+  name = "room_occupancy month-to-month"
+
+  [[scenario.table]]
+    name = "room_occupancies"
+
+    [[scenario.row]]
+      id = "<%= uuidNamed("user_room") %>"
+      user_id = "<%= uuidNamed("tenant") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      type = "month-to-month"
+
+[[scenario]]
+  name = "room_occupancy lease terminated"
+
+  [[scenario.table]]
+    name = "room_occupancies"
+
+    [[scenario.row]]
+      id = "<%= uuidNamed("user_room") %>"
+      user_id = "<%= uuidNamed("tenant") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      type = "lease"
+      terminated_at "<%= now() %>"
+
+[[scenario]]
+  name = "room_occupancy month-to-month terminated"
+
+  [[scenario.table]]
+    name = "room_occupancies"
+
+    [[scenario.row]]
+      id = "<%= uuidNamed("user_room") %>"
+      user_id = "<%= uuidNamed("tenant") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      type = "month-to-month"
+      terminated_at "<%= now() %>"
