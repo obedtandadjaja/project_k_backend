@@ -48,7 +48,7 @@ func Login(c buffalo.Context) error {
 
 	user := &models.User{}
 	if err := tx.Select("id", "credential_uuid").Where("email = ?", req.Email).First(user); err != nil {
-		return c.Error(http.StatusUnauthorized, nil)
+		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
 	}
 
 	res, err := clients.NewAuthClient().Login(
@@ -60,7 +60,7 @@ func Login(c buffalo.Context) error {
 		c.Request(),
 	)
 	if err != nil {
-		return c.Error(http.StatusUnauthorized, nil)
+		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
 	}
 
 	jwt, err := helpers.GenerateAccessToken(user.ID.String(), user.CredentialUUID.UUID.String())
