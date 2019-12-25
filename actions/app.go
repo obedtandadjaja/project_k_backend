@@ -18,9 +18,15 @@ import (
 
 var ENV = envy.Get("ENV", "development")
 var app *buffalo.App
+var publicEndpoints map[string]bool
 
 func App() *buffalo.App {
 	if app == nil {
+		publicEndpoints = map[string]bool{
+			"/api/v1/login":  true,
+			"/api/v1/signup": true,
+		}
+
 		app = buffalo.New(buffalo.Options{
 			Env:          ENV,
 			SessionStore: sessions.Null{},
@@ -80,16 +86,19 @@ func forceSSL() buffalo.MiddlewareFunc {
 
 func parseAccessToken(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
-		if jwt := c.Request().Header.Get("Authorization"); jwt != "" {
-			userID, err := helpers.VerifyAccessToken(jwt)
+		jwt := c.Request().Header.Get("Authorization")
+		userID, err := helpers.VerifyAccessToken(jwt)
 
-			if err != nil {
-				c.Render(http.StatusUnauthorized, r.JSON("Invalid access token"))
+		if err != nil {
+			// for public endpoints, do not throw 401
+			if ok := publicEndpoints[c.Request().RequestURI]; ok {
+				return next(c)
 			}
-
-			c.Set("current_user_id", userID)
+			c.Render(http.StatusUnauthorized, r.JSON("Invalid access token"))
 		}
 
+		// attaches current_user_id variable in context
+		c.Set("current_user_id", userID)
 		return next(c)
 	}
 }
