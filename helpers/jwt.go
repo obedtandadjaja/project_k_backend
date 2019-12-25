@@ -60,7 +60,12 @@ func GenerateAccessToken(userID, credentialID string) (string, error) {
 	return tokenString, nil
 }
 
+// returns credentialID, sessionID, error
 func VerifySessionToken(tokenString string) (string, string, error) {
+	if len(tokenString) == 0 {
+		return "", "", fmt.Errorf("Invalid session token")
+	}
+
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&SessionTokenClaim{},
@@ -79,7 +84,12 @@ func VerifySessionToken(tokenString string) (string, string, error) {
 		nil
 }
 
+// returns userID, error
 func VerifyAccessToken(tokenString string) (string, error) {
+	if len(tokenString) == 0 {
+		return "", fmt.Errorf("Invalid access token")
+	}
+
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&AccessTokenClaim{},
