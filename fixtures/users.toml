@@ -73,6 +73,57 @@
       [[scenario.table.row.data.sharedFacilities]]
         name = "facility 2"
 
+[[scenario]]
+  name = "user with property with room"
+
+  [[scenario.table]]
+    name = "users"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("user") %>"
+      credential_uuid = "<%= uuidNamed("credential") %>"
+      name = "user"
+      email = "user@example.com"
+      phone = "1231231234"
+      notification_methods = ["email"]
+      data.marriageStatus = "notMarried"
+      data.religion = "christianProtestant"
+      data.identification.type = "Passport Number"
+      data.identification.value = "1231231234"
+      data.occupation = "professional"
+      data.companyName = "Google"
+      data.companyAddress = "123 Street Ave, San Francisco, 94085"
+      data.companyPhone = "1231231234"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "owner"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "properties"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("property") %>"
+      name = "property"
+      type = "apartment"
+      address = "123 Street Ave, San Francisco, CA 94085"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+      [[scenario.table.row.data.sharedFacilities]]
+        name = "facility 1"
+      [[scenario.table.row.data.sharedFacilities]]
+        name = "facility 2"
+
   [[scenario.table]]
     name = "rooms"
 
@@ -90,3 +141,98 @@
         name = "facility 1"
       [[scenario.table.row.data.facilities]]
         name = "facility 2"
+
+[[scenario]]
+  name = "user with property with room with tenant"
+
+  [[scenario.table]]
+    name = "users"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("user") %>"
+      credential_uuid = "<%= uuidNamed("credential") %>"
+      name = "user"
+      email = "user@example.com"
+      phone = "1231231234"
+      notification_methods = ["email"]
+      data.marriageStatus = "notMarried"
+      data.religion = "christianProtestant"
+      data.identification.type = "Passport Number"
+      data.identification.value = "1231231234"
+      data.occupation = "professional"
+      data.companyName = "Google"
+      data.companyAddress = "123 Street Ave, San Francisco, 94085"
+      data.companyPhone = "1231231234"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("tenant") %>"
+      name = "tenant"
+      email = "tenant@example.com"
+      phone = "1231231234"
+      notification_methods = ["email"]
+      data.marriageStatus = "notMarried"
+      data.religion = "christianProtestant"
+      data.identification.type = "Passport Number"
+      data.identification.value = "1231231234"
+      data.occupation = "professional"
+      data.companyName = "Google"
+      data.companyAddress = "123 Street Ave, San Francisco, 94085"
+      data.companyPhone = "1231231234"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "owner"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "properties"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("property") %>"
+      name = "property"
+      type = "apartment"
+      address = "123 Street Ave, San Francisco, CA 94085"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+      [[scenario.table.row.data.sharedFacilities]]
+        name = "facility 1"
+      [[scenario.table.row.data.sharedFacilities]]
+        name = "facility 2"
+
+  [[scenario.table]]
+    name = "rooms"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("room") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      name = "room"
+      price_amount = 10000000
+      payment_schedule = "monthly"
+      type = "Type A"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+      [[scenario.table.row.data.facilities]]
+        name = "facility 1"
+      [[scenario.table.row.data.facilities]]
+        name = "facility 2"
+
+  [[scenario.table]]
+    name = "room_occupancies"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("user_room") %>"
+      user_id = "<%= uuidNamed("tenant") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      type = "lease"
