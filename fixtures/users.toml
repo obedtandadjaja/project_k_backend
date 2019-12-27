@@ -10,17 +10,21 @@
       name = "user"
       email = "user@example.com"
       phone = "1231231234"
-      notification_methods = ["email"]
-      data.marriageStatus = "notMarried"
-      data.religion = "christianProtestant"
-      data.identification.type = "Passport Number"
-      data.identification.value = "1231231234"
-      data.occupation = "professional"
-      data.companyName = "Google"
-      data.companyAddress = "123 Street Ave, San Francisco, 94085"
-      data.companyPhone = "1231231234"
+      notification_methods = [ "email" ]
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+      [[data]]
+        marriageStatus = "notMarried"
+        religion = "christianProtestant"
+        occupation = "professional"
+        companyName = "Google"
+        companyAddress = "123 Street Ave, San Francisco, 94085"
+        companyPhone = "1231231234"
+
+        [[identification]]
+          type = "Passport Number"
+          value = "1231231234"
 
 [[scenario]]
   name = "user with property"
@@ -34,17 +38,21 @@
       name = "user"
       email = "user@example.com"
       phone = "1231231234"
-      notification_methods = ["email"]
-      data.marriageStatus = "notMarried"
-      data.religion = "christianProtestant"
-      data.identification.type = "Passport Number"
-      data.identification.value = "1231231234"
-      data.occupation = "professional"
-      data.companyName = "Google"
-      data.companyAddress = "123 Street Ave, San Francisco, 94085"
-      data.companyPhone = "1231231234"
+      notification_methods = [ "email" ]
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+      [[data]]
+        marriageStatus = "notMarried"
+        religion = "christianProtestant"
+        occupation = "professional"
+        companyName = "Google"
+        companyAddress = "123 Street Ave, San Francisco, 94085"
+        companyPhone = "1231231234"
+
+        [[identification]]
+          type = "Passport Number"
+          value = "1231231234"
 
   [[scenario.table]]
     name = "user_property_relationships"
@@ -85,17 +93,21 @@
       name = "user"
       email = "user@example.com"
       phone = "1231231234"
-      notification_methods = ["email"]
-      data.marriageStatus = "notMarried"
-      data.religion = "christianProtestant"
-      data.identification.type = "Passport Number"
-      data.identification.value = "1231231234"
-      data.occupation = "professional"
-      data.companyName = "Google"
-      data.companyAddress = "123 Street Ave, San Francisco, 94085"
-      data.companyPhone = "1231231234"
+      notification_methods = [ "email" ]
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+      [[data]]
+        marriageStatus = "notMarried"
+        religion = "christianProtestant"
+        occupation = "professional"
+        companyName = "Google"
+        companyAddress = "123 Street Ave, San Francisco, 94085"
+        companyPhone = "1231231234"
+
+        [[identification]]
+          type = "Passport Number"
+          value = "1231231234"
 
   [[scenario.table]]
     name = "user_property_relationships"
@@ -154,34 +166,42 @@
       name = "user"
       email = "user@example.com"
       phone = "1231231234"
-      notification_methods = ["email"]
-      data.marriageStatus = "notMarried"
-      data.religion = "christianProtestant"
-      data.identification.type = "Passport Number"
-      data.identification.value = "1231231234"
-      data.occupation = "professional"
-      data.companyName = "Google"
-      data.companyAddress = "123 Street Ave, San Francisco, 94085"
-      data.companyPhone = "1231231234"
+      notification_methods = [ "email" ]
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+      [[data]]
+        marriageStatus = "notMarried"
+        religion = "christianProtestant"
+        occupation = "professional"
+        companyName = "Google"
+        companyAddress = "123 Street Ave, San Francisco, 94085"
+        companyPhone = "1231231234"
+
+        [[identification]]
+          type = "Passport Number"
+          value = "1231231234"
 
     [[scenario.table.row]]
       id = "<%= uuidNamed("tenant") %>"
       name = "tenant"
       email = "tenant@example.com"
       phone = "1231231234"
-      notification_methods = ["email"]
-      data.marriageStatus = "notMarried"
-      data.religion = "christianProtestant"
-      data.identification.type = "Passport Number"
-      data.identification.value = "1231231234"
-      data.occupation = "professional"
-      data.companyName = "Google"
-      data.companyAddress = "123 Street Ave, San Francisco, 94085"
-      data.companyPhone = "1231231234"
+      notification_methods = [ "email" ]
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+      [[data]]
+        marriageStatus = "notMarried"
+        religion = "christianProtestant"
+        occupation = "professional"
+        companyName = "Google"
+        companyAddress = "123 Street Ave, San Francisco, 94085"
+        companyPhone = "1231231234"
+
+        [[identification]]
+          type = "Passport Number"
+          value = "1231231234"
 
   [[scenario.table]]
     name = "user_property_relationships"
