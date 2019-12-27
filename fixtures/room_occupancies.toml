@@ -4,7 +4,7 @@
   [[scenario.table]]
     name = "room_occupancies"
 
-    [[scenario.row]]
+    [[scenario.table.row]]
       id = "<%= uuidNamed("user_room") %>"
       user_id = "<%= uuidNamed("tenant") %>"
       room_id = "<%= uuidNamed("room") %>"
@@ -16,7 +16,7 @@
   [[scenario.table]]
     name = "room_occupancies"
 
-    [[scenario.row]]
+    [[scenario.table.row]]
       id = "<%= uuidNamed("user_room") %>"
       user_id = "<%= uuidNamed("tenant") %>"
       room_id = "<%= uuidNamed("room") %>"
@@ -28,12 +28,12 @@
   [[scenario.table]]
     name = "room_occupancies"
 
-    [[scenario.row]]
+    [[scenario.table.row]]
       id = "<%= uuidNamed("user_room") %>"
       user_id = "<%= uuidNamed("tenant") %>"
       room_id = "<%= uuidNamed("room") %>"
       type = "lease"
-      terminated_at "<%= now() %>"
+      terminated_at = "<%= now() %>"
 
 [[scenario]]
   name = "room_occupancy month-to-month terminated"
@@ -41,9 +41,9 @@
   [[scenario.table]]
     name = "room_occupancies"
 
-    [[scenario.row]]
+    [[scenario.table.row]]
       id = "<%= uuidNamed("user_room") %>"
       user_id = "<%= uuidNamed("tenant") %>"
       room_id = "<%= uuidNamed("room") %>"
       type = "month-to-month"
-      terminated_at "<%= now() %>"
+      terminated_at = "<%= now() %>"
