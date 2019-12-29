@@ -5,26 +5,26 @@
     name = "users"
 
     [[scenario.table.row]]
-      id = "<%= uuid() %>"
-      credential_uuid = "<%= uuid() %>"
+      id = "<%= uuidNamed("user") %>"
+      credential_uuid = "<%= uuidNamed("credential") %>"
       name = "user"
       email = "user@example.com"
       phone = "1231231234"
       notification_methods = "{'email'}"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
-
-      [[data]]
-        marriageStatus = "notMarried"
-        religion = "christianProtestant"
-        occupation = "professional"
-        companyName = "Google"
-        companyAddress = "123 Street Ave, San Francisco, 94085"
-        companyPhone = "1231231234"
-
-        [[identification]]
-          type = "Passport Number"
-          value = "1231231234"
+      data = """{
+        \"marriageStatus\": \"notMarried\",
+        \"religion\": \"christianProtestant\",
+        \"occupation\": \"professional\",
+        \"companyName\": \"Google\",
+        \"companyAddress\": \"123 Street Ave, San Francisco, 94085\",
+        \"companyPhone\": 1231231234,
+        \"identification\": {
+          \"type\": \"Password Number\",
+          \"value\": 1231231234
+        }
+      }"""
 
 [[scenario]]
   name = "user with property"
