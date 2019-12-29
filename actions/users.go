@@ -14,13 +14,17 @@ type UsersResource struct {
 }
 
 func (v UsersResource) Show(c buffalo.Context) error {
+	if c.Value("current_user_id") != c.Param("user_id") {
+		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
+	}
+
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
 	}
 
 	user := &models.User{}
-	if err := tx.Find(user, c.Value("current_user_id")); err != nil {
+	if err := tx.Find(user, c.Param("user_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -28,6 +32,10 @@ func (v UsersResource) Show(c buffalo.Context) error {
 }
 
 func (v UsersResource) Update(c buffalo.Context) error {
+	if c.Value("current_user_id") != c.Param("user_id") {
+		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
+	}
+
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return fmt.Errorf("no transaction found")
