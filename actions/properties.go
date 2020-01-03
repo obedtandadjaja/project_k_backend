@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
@@ -74,6 +75,7 @@ func (v PropertiesResource) Create(c buffalo.Context) error {
 	}
 
 	if err := c.Bind(property); err != nil {
+		fmt.Println(err)
 		return err
 	}
 
