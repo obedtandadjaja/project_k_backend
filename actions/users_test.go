@@ -2,7 +2,6 @@ package actions
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/gobuffalo/suite/fix"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
