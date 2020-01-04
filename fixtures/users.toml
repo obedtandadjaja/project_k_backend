@@ -207,17 +207,6 @@
       }"""
 
   [[scenario.table]]
-    name = "user_property_relationships"
-
-    [[scenario.table.row]]
-      id = "<%= uuid() %>"
-      user_id = "<%= uuidNamed("user") %>"
-      property_id = "<%= uuidNamed("property") %>"
-      type = "owner"
-      created_at = "<%= now() %>"
-      updated_at = "<%= now() %>"
-
-  [[scenario.table]]
     name = "properties"
 
     [[scenario.table.row]]
@@ -233,6 +222,17 @@
           { \"name\": \"facility 2\" }
         ]
       }"""
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "owner"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
 
   [[scenario.table]]
     name = "rooms"
@@ -261,3 +261,5 @@
       user_id = "<%= uuidNamed("tenant") %>"
       room_id = "<%= uuidNamed("room") %>"
       type = "lease"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
