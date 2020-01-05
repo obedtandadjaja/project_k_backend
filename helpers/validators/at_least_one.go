@@ -15,7 +15,7 @@ type AtLeastOne struct {
 
 func (v *AtLeastOne) IsValid(errors *validate.Errors) {
 	for _, validator := range v.Validators {
-		newErrors := &validate.Errors{}
+		newErrors := validate.NewErrors()
 		if validator.IsValid(newErrors); !newErrors.HasAny() {
 			return
 		}
