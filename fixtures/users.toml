@@ -263,3 +263,161 @@
       type = "lease"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
+
+[[scenario]]
+  name = "user with property with maintenance request"
+
+  [[scenario.table]]
+    name = "users"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("user") %>"
+      credential_uuid = "<%= uuidNamed("credential") %>"
+      name = "user"
+      email = "user@example.com"
+      phone = "1231231234"
+      notification_methods = "{'email'}"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+      data = """{
+        \"marriageStatus\": \"notMarried\",
+        \"religion\": \"christianProtestant\",
+        \"occupation\": \"professional\",
+        \"companyName\": \"Google\",
+        \"companyAddress\": \"123 Street Ave, San Francisco, 94085\",
+        \"companyPhone\": 1231231234,
+        \"identification\": {
+          \"type\": \"Password Number\",
+          \"value\": 1231231234
+        }
+      }"""
+
+  [[scenario.table]]
+    name = "properties"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("property") %>"
+      name = "property"
+      type = "apartment"
+      address = "123 Street Ave, San Francisco, CA 94085"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+      data = """{
+        \"sharedFacilities\": [
+          { \"name\": \"facility 1\" },
+          { \"name\": \"facility 2\" }
+        ]
+      }"""
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "owner"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "maintenance_requests"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("maintenance_request") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      reporter_id = "<%= uuidNamed("user") %>"
+      status = "pending"
+      title = "title"
+      description = "description"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+[[scenario]]
+  name = "user with property with room with maintenance request"
+
+  [[scenario.table]]
+    name = "users"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("user") %>"
+      credential_uuid = "<%= uuidNamed("credential") %>"
+      name = "user"
+      email = "user@example.com"
+      phone = "1231231234"
+      notification_methods = "{'email'}"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+      data = """{
+        \"marriageStatus\": \"notMarried\",
+        \"religion\": \"christianProtestant\",
+        \"occupation\": \"professional\",
+        \"companyName\": \"Google\",
+        \"companyAddress\": \"123 Street Ave, San Francisco, 94085\",
+        \"companyPhone\": 1231231234,
+        \"identification\": {
+          \"type\": \"Password Number\",
+          \"value\": 1231231234
+        }
+      }"""
+
+  [[scenario.table]]
+    name = "properties"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("property") %>"
+      name = "property"
+      type = "apartment"
+      address = "123 Street Ave, San Francisco, CA 94085"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+      data = """{
+        \"sharedFacilities\": [
+          { \"name\": \"facility 1\" },
+          { \"name\": \"facility 2\" }
+        ]
+      }"""
+
+  [[scenario.table]]
+    name = "user_property_relationships"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      user_id = "<%= uuidNamed("user") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      type = "owner"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+  [[scenario.table]]
+    name = "rooms"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("room") %>"
+      property_id = "<%= uuidNamed("property") %>"
+      name = "room"
+      price_amount = 10000000
+      payment_schedule = "monthly"
+      type = "Type A"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+      data = """{
+        \"facilities\": [
+          { \"name\": \"facility 1\" },
+          { \"name\": \"facility 2\" }
+        ]
+      }"""
+
+  [[scenario.table]]
+    name = "maintenance_requests"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("maintenance_request") %>"
+      room_id = "<%= uuidNamed("room") %>"
+      reporter_id = "<%= uuidNamed("user") %>"
+      status = "pending"
+      title = "title"
+      description = "description"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"

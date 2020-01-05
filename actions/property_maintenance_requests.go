@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
@@ -52,12 +53,14 @@ func (v PropertyMaintenanceRequestsResource) Show(c buffalo.Context) error {
 
 	maintenanceRequest := &models.MaintenanceRequest{}
 
+	fmt.Println(c.Param("property_maintenance_request_id"))
+
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("property_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {
-		if err := q.Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+		if err := q.Find(maintenanceRequest, c.Param("property_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	}
@@ -102,7 +105,7 @@ func (v PropertyMaintenanceRequestsResource) Update(c buffalo.Context) error {
 	tx, q := v.getTransactionAndQueryContext(c)
 
 	maintenanceRequest := &models.MaintenanceRequest{}
-	if err := q.Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+	if err := q.Find(maintenanceRequest, c.Param("property_maintenance_request_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -129,7 +132,7 @@ func (v PropertyMaintenanceRequestsResource) Destroy(c buffalo.Context) error {
 
 	maintenanceRequest := &models.MaintenanceRequest{}
 
-	if err := q.Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+	if err := q.Find(maintenanceRequest, c.Param("property_maintenance_request_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 

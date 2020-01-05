@@ -16,9 +16,9 @@ type MaintenanceRequest struct {
 	ID          uuid.UUID    `json:"id" db:"id"`
 	PropertyID  nulls.UUID   `json:"propertyID,omitempty" db:"property_id"`
 	Property    *Property    `json:"property,omitempty" belongs_to:"property"`
-	RoomID      nulls.UUID   `json:"roomID" db:"room_id"`
+	RoomID      nulls.UUID   `json:"roomID,omitempty" db:"room_id"`
 	Room        *Room        `json:"room,omitempty" belongs_to:"room"`
-	ReporterID  uuid.UUID    `json:"reporterID" db:"reported_by"`
+	ReporterID  uuid.UUID    `json:"reporterID" db:"reporter_id"`
 	Reporter    *User        `json:"reporter,omitempty" belongs_to:"user"`
 	Status      string       `json:"status" db:"status"`
 	Title       string       `json:"title" db:"title"`
