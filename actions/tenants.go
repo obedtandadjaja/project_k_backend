@@ -25,7 +25,6 @@ func (v TenantsResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.
 		InnerJoin("properties", "properties.id = rooms.property_id").
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
 		Where("rooms.id = ?", c.Param("room_id")).
-		Where("properties.id = ?", c.Param("property_id")).
 		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
 }
 
@@ -87,11 +86,9 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 	q := tx.Q().
 		InnerJoin("properties", "properties.id = rooms.property_id").
 		InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-		Where("rooms.id = ?", c.Param("room_id")).
-		Where("properties.id = ?", c.Param("property_id")).
-		Where("user_property_relationships.user_id = ?", c.Value("current_user_id"))
-	err := q.First(&models.Room{})
-	if err != nil {
+		Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
+		Where("rooms.id = ?", c.Param("room_id"))
+	if err := q.First(&models.Room{}); err != nil {
 		verrs := validate.NewErrors()
 		verrs.Add("room", "Room does not exist")
 		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))

@@ -98,8 +98,7 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 	tx, q := v.getTransactionAndQueryContext(c)
 
 	property := &models.Property{}
-	err := q.Find(property, c.Param("property_id"))
-	if err != nil {
+	if err := q.Find(property, c.Param("property_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 

@@ -1,13 +1,14 @@
 package actions
 
 import (
+	"net/http"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	"github.com/rs/cors"
 	"github.com/unrolled/secure"
-	"net/http"
 
 	"github.com/gobuffalo/buffalo-pop/pop/popmw"
 	contenttype "github.com/gobuffalo/mw-contenttype"
@@ -66,7 +67,12 @@ func App() *buffalo.App {
 		app.Resource("/api/v1/properties/{property_id}/rooms", RoomsResource{})
 		app.POST("/api/v1/properties/{property_id}/rooms/batch", RoomsResource{}.BatchCreate)
 		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
-		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments", PaymentsResource{})
+		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments",
+			PaymentsResource{})
+		app.Resource("/api/v1/properties/{property_id}/maintenance_requests",
+			PropertyMaintenanceRequestsResource{})
+		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/maintenance_requests",
+			RoomMaintenanceRequestsResource{})
 	}
 
 	return app

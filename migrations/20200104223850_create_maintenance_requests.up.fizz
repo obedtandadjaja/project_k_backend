@@ -1,0 +1,11 @@
+create_table("maintenance_requests") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("property_id", "uuid", {null: true})
+	t.Column("room_id", "uuid", {null: true})
+	t.Column("reporter_id", "uuid", {})
+	t.Column("status", "string", {})
+	t.Column("title", "string", {})
+	t.Column("description", "string", {null: true})
+	t.Column("completed_at", "timestamp", {null: true})
+	t.Timestamps()
+}
