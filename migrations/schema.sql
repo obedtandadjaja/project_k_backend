@@ -47,6 +47,44 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 SET default_tablespace = '';
 
 --
+-- Name: credentials; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.credentials (
+    id uuid NOT NULL,
+    password character varying(255),
+    failed_attempts integer NOT NULL,
+    locked_until timestamp without time zone,
+    password_reset_token character varying(255),
+    password_reset_token_expires_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.credentials OWNER TO postgres;
+
+--
+-- Name: maintenance_requests; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.maintenance_requests (
+    id uuid NOT NULL,
+    property_id uuid,
+    room_id uuid,
+    reporter_id uuid NOT NULL,
+    status character varying(255) NOT NULL,
+    title character varying(255) NOT NULL,
+    description character varying(255),
+    completed_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.maintenance_requests OWNER TO postgres;
+
+--
 -- Name: payments; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -128,6 +166,23 @@ CREATE TABLE public.schema_migration (
 ALTER TABLE public.schema_migration OWNER TO postgres;
 
 --
+-- Name: sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sessions (
+    id uuid NOT NULL,
+    credential_id uuid NOT NULL,
+    ip_address character varying(255),
+    user_agent character varying(255),
+    last_accessed_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.sessions OWNER TO postgres;
+
+--
 -- Name: user_property_relationships; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -164,6 +219,22 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
+-- Name: credentials credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.credentials
+    ADD CONSTRAINT credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: maintenance_requests maintenance_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.maintenance_requests
+    ADD CONSTRAINT maintenance_requests_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -193,6 +264,14 @@ ALTER TABLE ONLY public.room_occupancies
 
 ALTER TABLE ONLY public.rooms
     ADD CONSTRAINT rooms_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
 
 
 --
