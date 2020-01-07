@@ -54,11 +54,11 @@ func (v RoomMaintenanceRequestsResource) Show(c buffalo.Context) error {
 	maintenanceRequest := &models.MaintenanceRequest{}
 
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("room_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {
-		if err := q.Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+		if err := q.Find(maintenanceRequest, c.Param("room_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	}
@@ -68,7 +68,7 @@ func (v RoomMaintenanceRequestsResource) Show(c buffalo.Context) error {
 
 func (v RoomMaintenanceRequestsResource) Create(c buffalo.Context) error {
 	maintenanceRequest := &models.MaintenanceRequest{
-		PropertyID: nulls.UUID{UUID: helpers.ParseUUID(c.Param("property_id")), Valid: true},
+		RoomID:     nulls.UUID{UUID: helpers.ParseUUID(c.Param("room_id")), Valid: true},
 		ReporterID: helpers.ParseUUID(c.Value("current_user_id").(string)),
 	}
 	if err := c.Bind(maintenanceRequest); err != nil {
@@ -104,7 +104,7 @@ func (v RoomMaintenanceRequestsResource) Update(c buffalo.Context) error {
 	tx, q := v.getTransactionAndQueryContext(c)
 
 	maintenanceRequest := &models.MaintenanceRequest{}
-	if err := q.Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+	if err := q.Find(maintenanceRequest, c.Param("room_maintenance_request_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -131,7 +131,7 @@ func (v RoomMaintenanceRequestsResource) Destroy(c buffalo.Context) error {
 
 	maintenanceRequest := &models.MaintenanceRequest{}
 
-	if err := q.Find(maintenanceRequest, c.Param("maintenance_request_id")); err != nil {
+	if err := q.Find(maintenanceRequest, c.Param("room_maintenance_request_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
