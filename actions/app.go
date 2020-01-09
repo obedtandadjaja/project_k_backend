@@ -73,6 +73,7 @@ func App() *buffalo.App {
 			PropertyMaintenanceRequestsResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/maintenance_requests",
 			RoomMaintenanceRequestsResource{})
+		app.Resource("/api/v1/user/maintenance_requests", UserMaintenanceRequestsResource{})
 	}
 
 	return app
