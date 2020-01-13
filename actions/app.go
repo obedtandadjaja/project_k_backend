@@ -24,8 +24,10 @@ var publicEndpoints map[string]bool
 func App() *buffalo.App {
 	if app == nil {
 		publicEndpoints = map[string]bool{
+			"/api/health":    true,
 			"/api/v1/login":  true,
 			"/api/v1/signup": true,
+			"/api/v1/token":  true,
 		}
 
 		app = buffalo.New(buffalo.Options{
