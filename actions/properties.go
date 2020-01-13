@@ -3,6 +3,7 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
@@ -33,7 +34,7 @@ func (v PropertiesResource) List(c buffalo.Context) error {
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).All(properties); err != nil {
+		if err := q.Eager(strings.Split(c.Param("eager"), ",")...).All(properties); err != nil {
 			return err
 		}
 	} else {
