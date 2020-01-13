@@ -23,7 +23,7 @@ func Create(tx *pop.Connection, request *CreateRequest, r *http.Request) (*Creat
 	var response CreateResponse
 
 	hashedPassword, _ := helpers.HashPassword(request.Password)
-	cred := models.Credential{
+	cred := &models.Credential{
 		Password: nulls.String{String: hashedPassword, Valid: true},
 	}
 
@@ -32,7 +32,7 @@ func Create(tx *pop.Connection, request *CreateRequest, r *http.Request) (*Creat
 		return &response, err
 	}
 
-	newSession := models.Session{
+	newSession := &models.Session{
 		CredentialID: cred.ID,
 		IpAddress:    nulls.String{String: r.RemoteAddr, Valid: true},
 		UserAgent:    nulls.String{String: r.UserAgent(), Valid: true},

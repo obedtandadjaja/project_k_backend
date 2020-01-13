@@ -2,8 +2,9 @@ package actions
 
 import (
 	"fmt"
-	"github.com/lib/pq"
 	"net/http"
+
+	"github.com/lib/pq"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/nulls"
@@ -68,6 +69,8 @@ func Signup(c buffalo.Context) error {
 	if err != nil {
 		if pqerr, ok := err.(*pq.Error); ok && pqerr.Code == "23505" {
 			return c.Render(http.StatusUnprocessableEntity, r.JSON("Email has been taken"))
+		} else {
+			return c.Render(http.StatusInternalServerError, r.JSON("Internal server error"))
 		}
 	}
 

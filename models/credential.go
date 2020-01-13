@@ -2,12 +2,13 @@ package models
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/gofrs/uuid"
-	"time"
 )
 
 type Credential struct {
@@ -19,7 +20,6 @@ type Credential struct {
 	PasswordResetTokenExpiresAt nulls.Time   `json:"passwordResetTokenExpiresAt,omitempty" db:"password_reset_token_expires_at"`
 	CreatedAt                   time.Time    `json:"createdAt" db:"created_at"`
 	UpdatedAt                   time.Time    `json:"updatedAt" db:"updated_at"`
-	User                        *User        `json:"user,omitempty" belongs_to:"user"`
 	Sessions                    []Session    `json:"sessions,omitempty" has_many:"sessions"`
 }
 
