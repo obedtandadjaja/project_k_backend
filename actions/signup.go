@@ -60,6 +60,7 @@ func Signup(c buffalo.Context) error {
 	}
 
 	user := &models.User{
+		Type:                models.USER_ADMIN,
 		Email:               req.Email,
 		CredentialUUID:      nulls.NewUUID(res.CredentialID),
 		NotificationMethods: []string{"email"},

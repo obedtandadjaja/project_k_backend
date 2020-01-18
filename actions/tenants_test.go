@@ -83,6 +83,7 @@ func (as *ActionSuite) Test_TenantsResource_Create() {
 
 	propertyToCreate := &models.User{
 		Name:  nulls.String{String: "tenant", Valid: true},
+		Type:  models.USER_TENANT,
 		Email: "tenant@example.com",
 		Rooms: models.Rooms{models.Room{ID: helpers.ParseUUID(roomID.(string))}},
 	}
@@ -128,7 +129,9 @@ func (as *ActionSuite) Test_TenantsResource_Update() {
 		&models.User{
 			ID:    helpers.ParseUUID(tenantID.(string)),
 			Rooms: models.Rooms{models.Room{ID: helpers.ParseUUID(roomID.(string))}},
+			Type:  models.USER_TENANT,
 			Name:  nulls.String{String: "Changed", Valid: true},
+			Email: "changed@changed.com",
 		},
 	)
 	as.Equal(200, res.Code)
@@ -137,6 +140,7 @@ func (as *ActionSuite) Test_TenantsResource_Update() {
 	as.DB.Find(tenant, tenantID.(string))
 
 	as.Equal(nulls.String{String: "Changed", Valid: true}, tenant.Name)
+	as.Equal("changed@changed.com", tenant.Email)
 }
 
 func (as *ActionSuite) Test_TenantsResource_Destroy() {

@@ -114,7 +114,7 @@ func (v PropertiesResource) Update(c buffalo.Context) error {
 
 	if verrs.HasAny() {
 		c.Set("errors", verrs)
-		return c.Render(http.StatusUnprocessableEntity, r.JSON(property))
+		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
 	}
 
 	return c.Render(http.StatusOK, r.JSON(property))

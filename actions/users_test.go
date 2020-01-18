@@ -50,7 +50,11 @@ func (as *ActionSuite) Test_UsersResource_Update() {
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
-	res := req.Put(&models.User{ID: helpers.ParseUUID(userID.(string)), Email: "asdf@example.com"})
+	res := req.Put(&models.User{
+		ID:    helpers.ParseUUID(userID.(string)),
+		Email: "asdf@example.com",
+		Type:  models.USER_TENANT,
+	})
 	as.Equal(200, res.Code)
 
 	user := &models.User{}

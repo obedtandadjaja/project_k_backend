@@ -212,7 +212,8 @@ CREATE TABLE public.users (
     deactivated_at timestamp without time zone,
     data jsonb,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    type character varying(255) NOT NULL
 );
 
 

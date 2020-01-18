@@ -12,17 +12,22 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+var USER_ADMIN string = "admin"
+var USER_TENANT string = "tenant"
+var USER_VALID_TYPES []string = []string{USER_ADMIN, USER_TENANT}
+
 type User struct {
-	ID                  uuid.UUID             `json:"id,omitempty" db:"id"`
+	ID                  uuid.UUID             `json:"id" db:"id"`
+	Type                string                `json:"type" db:"type"`
 	Name                nulls.String          `json:"name,omitempty" db:"name"`
-	CredentialUUID      nulls.UUID            `json:"credentialUUID,omitmepty" db:"credential_uuid"`
-	Email               string                `json:"email,omitempty" db:"email"`
-	Phone               nulls.String          `json:"phone,omityempty" db:"phone"`
+	CredentialUUID      nulls.UUID            `json:"credentialUUID" db:"credential_uuid"`
+	Email               string                `json:"email" db:"email"`
+	Phone               nulls.String          `json:"phone" db:"phone"`
 	NotificationMethods slices.String         `json:"notificationMethods,omitempty" db:"notification_methods"`
 	DeactivatedAt       nulls.Time            `json:"deactivatedAt,omitempty" db:"deactivated_at"`
-	Data                slices.Map            `json:"data,omitempty" db:"data"`
-	CreatedAt           time.Time             `json:"createdAt,omitempty" db:"created_at"`
-	UpdatedAt           time.Time             `json:"updatedAt,omitempty" db:"updated_at"`
+	Data                slices.Map            `json:"data" db:"data"`
+	CreatedAt           time.Time             `json:"createdAt" db:"created_at"`
+	UpdatedAt           time.Time             `json:"updatedAt" db:"updated_at"`
 	Properties          []Property            `json:"properties" many_to_many:"user_property_relationships"`
 	Rooms               []Room                `json:"rooms" many_to_many:"room_occupancies"`
 	RoomOccupancies     []RoomOccupancies     `json:"room_occupancies" has_many:"room_occupancies"`
@@ -49,6 +54,7 @@ func (u Users) String() string {
 func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: u.Email, Name: "Email"},
+		&validators.StringInclusion{Field: u.Type, Name: "Type", List: USER_VALID_TYPES},
 	), nil
 }
 
