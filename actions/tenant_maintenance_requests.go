@@ -5,23 +5,22 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
-	"github.com/gobuffalo/validate"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
-type UserMaintenanceRequestsResource struct {
+type TenantMaintenanceRequestsResource struct {
 	buffalo.Resource
 }
 
-func (v UserMaintenanceRequestsResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.Connection, *pop.Query) {
+func (v TenantMaintenanceRequestsResource) getTransactionAndQueryContext(c buffalo.Context) (*pop.Connection, *pop.Query) {
 	tx, _ := c.Value("tx").(*pop.Connection)
 
 	return tx, tx.Q().
 		Where("maintenance_requests.reporter_id = ?", c.Value("current_user_id"))
 }
 
-func (v UserMaintenanceRequestsResource) List(c buffalo.Context) error {
+func (v TenantMaintenanceRequestsResource) List(c buffalo.Context) error {
 	_, q := v.getTransactionAndQueryContext(c)
 
 	maintenanceRequests := &models.MaintenanceRequests{}
@@ -44,17 +43,17 @@ func (v UserMaintenanceRequestsResource) List(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(maintenanceRequests))
 }
 
-func (v UserMaintenanceRequestsResource) Show(c buffalo.Context) error {
+func (v TenantMaintenanceRequestsResource) Show(c buffalo.Context) error {
 	_, q := v.getTransactionAndQueryContext(c)
 
 	maintenanceRequest := &models.MaintenanceRequest{}
 
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("user_maintenance_request_id")); err != nil {
+		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("tenant_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {
-		if err := q.Find(maintenanceRequest, c.Param("user_maintenance_request_id")); err != nil {
+		if err := q.Find(maintenanceRequest, c.Param("tenant_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	}
@@ -62,7 +61,7 @@ func (v UserMaintenanceRequestsResource) Show(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(maintenanceRequest))
 }
 
-func (v UserMaintenanceRequestsResource) Create(c buffalo.Context) error {
+func (v TenantMaintenanceRequestsResource) Create(c buffalo.Context) error {
 	maintenanceRequest := &models.MaintenanceRequest{
 		ReporterID: helpers.ParseUUID(c.Value("current_user_id").(string)),
 	}
@@ -78,27 +77,35 @@ func (v UserMaintenanceRequestsResource) Create(c buffalo.Context) error {
 		return c.Render(http.StatusUnprocessableEntity, r.JSON(maintenanceRequest))
 	}
 
-	// double check that either the property or room exists
-	// double check that user also has access to those resources
+	tenant := &models.User{}
+	if err := tx.Eager("Rooms").Find(tenant, c.Value("current_user_id")); err != nil {
+		verrs.Add("user", "User not found")
+		return c.Render(http.StatusNotFound, r.JSON(verrs))
+	}
+
 	if !maintenanceRequest.RoomID.Valid {
-		q := tx.Q().
-			InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-			Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
-			Where("properties.id = ?", maintenanceRequest.PropertyID)
-		if err := q.First(&models.Property{}); err != nil {
-			verrs := validate.NewErrors()
+		found := false
+		for _, room := range tenant.Rooms {
+			if room.PropertyID == maintenanceRequest.PropertyID.UUID {
+				found = true
+				break
+			}
+		}
+
+		if !found {
 			verrs.Add("property", "Property does not exist")
 			return c.Render(http.StatusNotFound, r.JSON(verrs))
 		}
 	} else {
-		q := tx.Q().
-			InnerJoin("properties", "properties.id = rooms.property_id").
-			InnerJoin("user_property_relationships", "user_property_relationships.property_id = properties.id").
-			Where("user_property_relationships.user_id = ?", c.Value("current_user_id")).
-			Where("properties.id = ?", maintenanceRequest.PropertyID).
-			Where("rooms.id = ?", maintenanceRequest.RoomID)
-		if err := q.First(&models.Room{}); err != nil {
-			verrs := validate.NewErrors()
+		found := false
+		for _, room := range tenant.Rooms {
+			if room.ID == maintenanceRequest.RoomID.UUID {
+				found = true
+				break
+			}
+		}
+
+		if !found {
 			verrs.Add("room", "Room does not exist")
 			return c.Render(http.StatusNotFound, r.JSON(verrs))
 		}
@@ -112,11 +119,11 @@ func (v UserMaintenanceRequestsResource) Create(c buffalo.Context) error {
 	return c.Render(http.StatusCreated, r.JSON(maintenanceRequest))
 }
 
-func (v UserMaintenanceRequestsResource) Update(c buffalo.Context) error {
+func (v TenantMaintenanceRequestsResource) Update(c buffalo.Context) error {
 	tx, q := v.getTransactionAndQueryContext(c)
 
 	maintenanceRequest := &models.MaintenanceRequest{}
-	if err := q.Find(maintenanceRequest, c.Param("user_maintenance_request_id")); err != nil {
+	if err := q.Find(maintenanceRequest, c.Param("tenant_maintenance_request_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -138,12 +145,12 @@ func (v UserMaintenanceRequestsResource) Update(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(maintenanceRequest))
 }
 
-func (v UserMaintenanceRequestsResource) Destroy(c buffalo.Context) error {
+func (v TenantMaintenanceRequestsResource) Destroy(c buffalo.Context) error {
 	tx, q := v.getTransactionAndQueryContext(c)
 
 	maintenanceRequest := &models.MaintenanceRequest{}
 
-	if err := q.Find(maintenanceRequest, c.Param("user_maintenance_request_id")); err != nil {
+	if err := q.Find(maintenanceRequest, c.Param("tenant_maintenance_request_id")); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 

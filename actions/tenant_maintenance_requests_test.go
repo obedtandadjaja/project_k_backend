@@ -9,7 +9,7 @@ import (
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
 
-func (as *ActionSuite) Test_UserMaintenanceRequestsResource_List() {
+func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_List() {
 	as.LoadFixture("user with maintenance request")
 
 	fixture, err := fix.Find("user with maintenance request")
@@ -22,7 +22,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_List() {
 		as.NoError(err)
 	}
 
-	req := as.JSON("/api/v1/user/maintenance_requests")
+	req := as.JSON("/api/tenant/v1/maintenance_requests")
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
@@ -36,7 +36,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_List() {
 	as.Equal(1, len(responseBody))
 }
 
-func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Show() {
+func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_Show() {
 	as.LoadFixture("user with maintenance request")
 
 	fixture, err := fix.Find("user with maintenance request")
@@ -49,7 +49,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Show() {
 		as.NoError(err)
 	}
 
-	req := as.JSON("/api/v1/user/maintenance_requests/%s", maintenanceRequestID.(string))
+	req := as.JSON("/api/tenant/v1/maintenance_requests/%s", maintenanceRequestID.(string))
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
@@ -62,14 +62,14 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Show() {
 	as.Equal(maintenanceRequestID.(string), responseBody["id"])
 }
 
-func (as *ActionSuite) Test_UserMaintenanceRequestsResource_CreateRoomMaintenanceRequest() {
-	as.LoadFixture("user with property with room")
+func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_CreateRoomMaintenanceRequest() {
+	as.LoadFixture("tenant with property with room")
 
-	fixture, err := fix.Find("user with property with room")
+	fixture, err := fix.Find("tenant with property with room")
 	userID := fixture.Tables[0].Row[0]["id"]
 	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
-	roomID := fixture.Tables[3].Row[0]["id"]
+	roomID := fixture.Tables[2].Row[0]["id"]
 
 	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
 	if err != nil {
@@ -84,7 +84,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_CreateRoomMaintenanc
 		RoomID:      nulls.UUID{UUID: helpers.ParseUUID(roomID.(string)), Valid: true},
 		PropertyID:  nulls.UUID{UUID: helpers.ParseUUID(propertyID.(string)), Valid: true},
 	}
-	req := as.JSON("/api/v1/user/maintenance_requests")
+	req := as.JSON("/api/tenant/v1/maintenance_requests")
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
@@ -103,10 +103,10 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_CreateRoomMaintenanc
 	as.NoError(err)
 }
 
-func (as *ActionSuite) Test_UserMaintenanceRequestsResource_CreatePropertyMaintenanceRequest() {
-	as.LoadFixture("user with property")
+func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_CreatePropertyMaintenanceRequest() {
+	as.LoadFixture("tenant with property with room")
 
-	fixture, err := fix.Find("user with property")
+	fixture, err := fix.Find("tenant with property with room")
 	userID := fixture.Tables[0].Row[0]["id"]
 	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
@@ -123,7 +123,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_CreatePropertyMainte
 		ReporterID:  helpers.ParseUUID(userID.(string)),
 		PropertyID:  nulls.UUID{UUID: helpers.ParseUUID(propertyID.(string)), Valid: true},
 	}
-	req := as.JSON("/api/v1/user/maintenance_requests")
+	req := as.JSON("/api/tenant/v1/maintenance_requests")
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
@@ -142,7 +142,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_CreatePropertyMainte
 	as.NoError(err)
 }
 
-func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Update() {
+func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_Update() {
 	as.LoadFixture("user with property with maintenance request")
 
 	fixture, err := fix.Find("user with maintenance request")
@@ -156,7 +156,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Update() {
 		as.NoError(err)
 	}
 
-	req := as.JSON("/api/v1/user/maintenance_requests/%s", maintenanceRequestID.(string))
+	req := as.JSON("/api/tenant/v1/maintenance_requests/%s", maintenanceRequestID.(string))
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
@@ -177,7 +177,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Update() {
 	as.Equal("Changed", maintenanceRequest.Title)
 }
 
-func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Destroy() {
+func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_Destroy() {
 	as.LoadFixture("user with maintenance request")
 
 	fixture, err := fix.Find("user with maintenance request")
@@ -190,7 +190,7 @@ func (as *ActionSuite) Test_UserMaintenanceRequestsResource_Destroy() {
 		as.NoError(err)
 	}
 
-	req := as.JSON("/api/v1/user/maintenance_requests/%s", maintenanceRequestID.(string))
+	req := as.JSON("/api/tenant/v1/maintenance_requests/%s", maintenanceRequestID.(string))
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
