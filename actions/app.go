@@ -60,11 +60,14 @@ func App() *buffalo.App {
 
 		app.Use(popmw.Transaction(models.DB))
 
+		// general endpoints
 		app.GET("/api/health", Health)
 		app.POST("/api/v1/token", Token)
 		app.POST("/api/v1/signup", Signup)
 		app.POST("/api/v1/login", Login)
 		app.Resource("/api/v1/users", UsersResource{})
+
+		// admin specific endpoints
 		app.Resource("/api/v1/properties", PropertiesResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms", RoomsResource{})
 		app.POST("/api/v1/properties/{property_id}/rooms/batch", RoomsResource{}.BatchCreate)
@@ -75,7 +78,10 @@ func App() *buffalo.App {
 			PropertyMaintenanceRequestsResource{})
 		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/maintenance_requests",
 			RoomMaintenanceRequestsResource{})
-		app.Resource("/api/v1/user/maintenance_requests", UserMaintenanceRequestsResource{})
+		app.Resource("/api/v1/maintenance_requests", AdminMaintenanceRequestsResource{})
+
+		// tenant specific endpoints
+		app.Resource("/api/tenant/v1/maintenance_requests", TenantMaintenanceRequestsResource{})
 	}
 
 	return app
