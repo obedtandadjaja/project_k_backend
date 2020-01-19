@@ -12,15 +12,10 @@ import (
 func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_List() {
 	as.LoadFixture("user with property with maintenance request")
 
-	fixture, err := fix.Find("user with property with maintenance request")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property with maintenance request")
 	maintenanceRequestID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/maintenance_requests")
 	req.Headers = map[string]string{
@@ -39,15 +34,10 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_List() {
 func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_Show() {
 	as.LoadFixture("user with property with maintenance request")
 
-	fixture, err := fix.Find("user with property with maintenance request")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property with maintenance request")
 	maintenanceRequestID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/maintenance_requests/%s", maintenanceRequestID.(string))
 	req.Headers = map[string]string{
@@ -67,14 +57,10 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_CreateRoomMaintenan
 
 	fixture, err := fix.Find("user with property with room")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
 	roomID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	maintenanceRequestToCreate := &models.MaintenanceRequest{
 		Title:       "title",
@@ -108,13 +94,9 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_CreatePropertyMaint
 
 	fixture, err := fix.Find("user with property")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	maintenanceRequestToCreate := &models.MaintenanceRequest{
 		Title:       "title",
@@ -145,16 +127,12 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_CreatePropertyMaint
 func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_Update() {
 	as.LoadFixture("user with property with maintenance request")
 
-	fixture, err := fix.Find("user with property with maintenance request")
+	fixture, _ := fix.Find("user with property with maintenance request")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
 	maintenanceRequestID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/maintenance_requests/%s", maintenanceRequestID.(string))
 	req.Headers = map[string]string{
@@ -181,14 +159,9 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_Destroy() {
 	as.LoadFixture("user with property with maintenance request")
 
 	fixture, err := fix.Find("user with property with maintenance request")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	maintenanceRequestID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/maintenance_requests/%s", maintenanceRequestID.(string))
 	req.Headers = map[string]string{

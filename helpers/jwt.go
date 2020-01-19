@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -17,6 +17,7 @@ type SessionTokenClaim struct {
 type AccessTokenClaim struct {
 	UserID       string `json:"user_id"`
 	CredentialID string `json:"credential_id"`
+	UserType     string `json:"user_type"`
 	jwt.StandardClaims
 }
 
@@ -34,17 +35,18 @@ func GenerateSessionToken(credentialID, sessionID string) (string, error) {
 
 	tokenString, err := token.SignedString(secretKey())
 	if err != nil {
-		return "", fmt.Errorf("error exchanging jwt token")
+		return "", errors.New("error exchanging jwt token")
 	}
 
 	return tokenString, nil
 }
 
-func GenerateAccessToken(userID, credentialID string) (string, error) {
+func GenerateAccessToken(userID, credentialID, userType string) (string, error) {
 	expirationTime := time.Now().Add(10 * time.Minute)
 	claims := &AccessTokenClaim{
 		UserID:       userID,
 		CredentialID: credentialID,
+		UserType:     userType,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -54,16 +56,16 @@ func GenerateAccessToken(userID, credentialID string) (string, error) {
 
 	tokenString, err := token.SignedString(secretKey())
 	if err != nil {
-		return "", fmt.Errorf("error exchanging jwt token")
+		return "", errors.New("error exchanging jwt token")
 	}
 
 	return tokenString, nil
 }
 
 // returns credentialID, sessionID, error
-func VerifySessionToken(tokenString string) (string, string, error) {
+func VerifySessionToken(tokenString string) (*SessionTokenClaim, error) {
 	if len(tokenString) == 0 {
-		return "", "", fmt.Errorf("Invalid session token")
+		return nil, errors.New("Invalid session token")
 	}
 
 	token, err := jwt.ParseWithClaims(
@@ -71,23 +73,21 @@ func VerifySessionToken(tokenString string) (string, string, error) {
 		&SessionTokenClaim{},
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("There was an error")
+				return nil, errors.New("There was an error")
 			}
 			return secretKey(), nil
 		})
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
-	return token.Claims.(*SessionTokenClaim).CredentialID,
-		token.Claims.(*SessionTokenClaim).SessionID,
-		nil
+	return token.Claims.(*SessionTokenClaim), nil
 }
 
 // returns userID, error
-func VerifyAccessToken(tokenString string) (string, error) {
+func VerifyAccessToken(tokenString string) (*AccessTokenClaim, error) {
 	if len(tokenString) == 0 {
-		return "", fmt.Errorf("Invalid access token")
+		return nil, errors.New("Invalid access token")
 	}
 
 	token, err := jwt.ParseWithClaims(
@@ -95,15 +95,15 @@ func VerifyAccessToken(tokenString string) (string, error) {
 		&AccessTokenClaim{},
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("There was an error")
+				return nil, errors.New("There was an error")
 			}
 			return secretKey(), nil
 		})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token.Claims.(*AccessTokenClaim).UserID, nil
+	return token.Claims.(*AccessTokenClaim), nil
 }
 
 func secretKey() []byte {

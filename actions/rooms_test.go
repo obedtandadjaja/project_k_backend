@@ -11,16 +11,11 @@ import (
 func (as *ActionSuite) Test_RoomsResource_List() {
 	as.LoadFixture("user with property with room")
 
-	fixture, err := fix.Find("user with property with room")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property with room")
 	propertyID := fixture.Tables[1].Row[0]["id"]
 	roomID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s/rooms", propertyID.(string))
 	req.Headers = map[string]string{
@@ -39,16 +34,11 @@ func (as *ActionSuite) Test_RoomsResource_List() {
 func (as *ActionSuite) Test_RoomsResource_Show() {
 	as.LoadFixture("user with property with room")
 
-	fixture, err := fix.Find("user with property with room")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property with room")
 	propertyID := fixture.Tables[1].Row[0]["id"]
 	roomID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s/rooms/%s", propertyID.(string), roomID.(string))
 	req.Headers = map[string]string{
@@ -67,14 +57,9 @@ func (as *ActionSuite) Test_RoomsResource_Create() {
 	as.LoadFixture("user with property")
 
 	fixture, err := fix.Find("user with property")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	propertyToCreate := &models.Room{
 		Name:            "room",
@@ -104,16 +89,11 @@ func (as *ActionSuite) Test_RoomsResource_Create() {
 func (as *ActionSuite) Test_RoomsResource_Update() {
 	as.LoadFixture("user with property with room")
 
-	fixture, err := fix.Find("user with property with room")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property with room")
 	propertyID := fixture.Tables[1].Row[0]["id"]
 	roomID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s/rooms/%s", propertyID.(string), roomID.(string))
 	req.Headers = map[string]string{
@@ -138,15 +118,10 @@ func (as *ActionSuite) Test_RoomsResource_Destroy() {
 	as.LoadFixture("user with property with room")
 
 	fixture, err := fix.Find("user with property with room")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
 	roomID := fixture.Tables[3].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s/rooms/%s", propertyID.(string), roomID.(string))
 	req.Headers = map[string]string{

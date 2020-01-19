@@ -5,6 +5,7 @@ import (
 
 	"github.com/gobuffalo/packr/v2"
 	"github.com/gobuffalo/suite"
+	"github.com/obedtandadjaja/project_k_backend/helpers"
 )
 
 type ActionSuite struct {
@@ -21,4 +22,13 @@ func Test_ActionSuite(t *testing.T) {
 		Action: action,
 	}
 	suite.Run(t, as)
+}
+
+func AccessTokenHelper(user map[string]interface{}) string {
+	token, _ := helpers.GenerateAccessToken(
+		user["id"].(string),
+		user["credential_uuid"].(string),
+		user["type"].(string),
+	)
+	return token
 }

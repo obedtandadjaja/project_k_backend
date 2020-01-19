@@ -11,14 +11,10 @@ import (
 func (as *ActionSuite) Test_UsersResource_Show() {
 	as.LoadFixture("user")
 
-	fixture, err := fix.Find("user")
+	fixture, _ := fix.Find("user")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/users/%s", userID.(string))
 	req.Headers = map[string]string{
@@ -37,14 +33,10 @@ func (as *ActionSuite) Test_UsersResource_Show() {
 func (as *ActionSuite) Test_UsersResource_Update() {
 	as.LoadFixture("user")
 
-	fixture, err := fix.Find("user")
+	fixture, _ := fix.Find("user")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/users/%s", userID.(string))
 	req.Headers = map[string]string{

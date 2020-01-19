@@ -75,7 +75,8 @@ func Signup(c buffalo.Context) error {
 		}
 	}
 
-	token, err := helpers.GenerateAccessToken(user.ID.String(), res.CredentialID.String())
+	token, err := helpers.GenerateAccessToken(user.ID.String(), res.CredentialID.String(),
+		user.Type)
 	response := SignupResponse{
 		Jwt:        token,
 		SessionJwt: res.SessionJwt,

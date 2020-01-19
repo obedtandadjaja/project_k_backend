@@ -49,16 +49,17 @@ func App() *buffalo.App {
 		// Automatically redirect to SSL
 		// app.Use(forceSSL())
 
-		// parse access token and set current_user
-		app.Use(parseAccessToken)
-
 		// Log request parameters (filters apply).
 		app.Use(paramlogger.ParameterLogger)
 
 		// Set the request content type to JSON
 		app.Use(contenttype.Set("application/json"))
 
+		// Use transactions for databases
 		app.Use(popmw.Transaction(models.DB))
+
+		// parse access token and set current_user
+		app.Use(parseAccessToken)
 
 		// general endpoints
 		app.GET("/api/health", Health)
@@ -68,20 +69,26 @@ func App() *buffalo.App {
 		app.Resource("/api/v1/users", UsersResource{})
 
 		// admin specific endpoints
-		app.Resource("/api/v1/properties", PropertiesResource{})
-		app.Resource("/api/v1/properties/{property_id}/rooms", RoomsResource{})
-		app.POST("/api/v1/properties/{property_id}/rooms/batch", RoomsResource{}.BatchCreate)
-		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
-		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments",
+		admin := app.Group("/api")
+		admin.Use(adminProtected)
+
+		admin.Resource("/v1/properties", PropertiesResource{})
+		admin.Resource("/v1/properties/{property_id}/rooms", RoomsResource{})
+		admin.POST("/v1/properties/{property_id}/rooms/batch", RoomsResource{}.BatchCreate)
+		admin.Resource("/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
+		admin.Resource("/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments",
 			PaymentsResource{})
-		app.Resource("/api/v1/properties/{property_id}/maintenance_requests",
+		admin.Resource("/v1/properties/{property_id}/maintenance_requests",
 			PropertyMaintenanceRequestsResource{})
-		app.Resource("/api/v1/properties/{property_id}/rooms/{room_id}/maintenance_requests",
+		admin.Resource("/v1/properties/{property_id}/rooms/{room_id}/maintenance_requests",
 			RoomMaintenanceRequestsResource{})
-		app.Resource("/api/v1/maintenance_requests", AdminMaintenanceRequestsResource{})
+		admin.Resource("/v1/maintenance_requests", AdminMaintenanceRequestsResource{})
 
 		// tenant specific endpoints
-		app.Resource("/api/tenant/v1/maintenance_requests", TenantMaintenanceRequestsResource{})
+		tenant := app.Group("/api/tenant")
+		tenant.Use(tenantProtected)
+
+		tenant.Resource("/v1/maintenance_requests", TenantMaintenanceRequestsResource{})
 	}
 
 	return app
@@ -102,7 +109,7 @@ func forceSSL() buffalo.MiddlewareFunc {
 func parseAccessToken(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		jwt := c.Request().Header.Get("Authorization")
-		userID, err := helpers.VerifyAccessToken(jwt)
+		claim, err := helpers.VerifyAccessToken(jwt)
 
 		if err != nil {
 			// for public endpoints, do not throw 401
@@ -112,8 +119,35 @@ func parseAccessToken(next buffalo.Handler) buffalo.Handler {
 			c.Render(http.StatusUnauthorized, r.JSON("Invalid access token"))
 		}
 
+		// attaches parsed claim to context
+		c.Set("access_token_claim", claim)
+
 		// attaches current_user_id variable in context
-		c.Set("current_user_id", userID)
+		c.Set("current_user_id", claim.UserID)
 		return next(c)
+	}
+}
+
+func adminProtected(next buffalo.Handler) buffalo.Handler {
+	return pathProtected(models.USER_ADMIN, next)
+}
+
+func tenantProtected(next buffalo.Handler) buffalo.Handler {
+	return pathProtected(models.USER_TENANT, next)
+}
+
+func pathProtected(userType string, next buffalo.Handler) buffalo.Handler {
+	return func(c buffalo.Context) error {
+		claim := c.Value("access_token_claim")
+		if claim == nil {
+			return c.Render(http.StatusUnauthorized, r.JSON("Invalid access token"))
+		}
+
+		// user_type must be "admin"
+		if claim, ok := claim.(*helpers.AccessTokenClaim); ok && claim.UserType == userType {
+			return next(c)
+		}
+
+		return c.Render(http.StatusForbidden, r.JSON("Forbidden"))
 	}
 }

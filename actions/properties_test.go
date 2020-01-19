@@ -11,15 +11,10 @@ import (
 func (as *ActionSuite) Test_PropertiesResource_List() {
 	as.LoadFixture("user with property")
 
-	fixture, err := fix.Find("user with property")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property")
 	propertyID := fixture.Tables[1].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties")
 	req.Headers = map[string]string{
@@ -38,15 +33,10 @@ func (as *ActionSuite) Test_PropertiesResource_List() {
 func (as *ActionSuite) Test_PropertiesResource_Show() {
 	as.LoadFixture("user with property")
 
-	fixture, err := fix.Find("user with property")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property")
 	propertyID := fixture.Tables[1].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s", propertyID.(string))
 	req.Headers = map[string]string{
@@ -66,12 +56,8 @@ func (as *ActionSuite) Test_PropertiesResource_Create() {
 
 	fixture, err := fix.Find("user")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	propertyToCreate := &models.Property{
 		Name:    "property",
@@ -101,15 +87,10 @@ func (as *ActionSuite) Test_PropertiesResource_Create() {
 func (as *ActionSuite) Test_PropertiesResource_Update() {
 	as.LoadFixture("user with property")
 
-	fixture, err := fix.Find("user with property")
-	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
+	fixture, _ := fix.Find("user with property")
 	propertyID := fixture.Tables[1].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s", propertyID.(string))
 	req.Headers = map[string]string{
@@ -129,13 +110,9 @@ func (as *ActionSuite) Test_PropertiesResource_Destroy() {
 
 	fixture, err := fix.Find("user with property")
 	userID := fixture.Tables[0].Row[0]["id"]
-	credentialUUID := fixture.Tables[0].Row[0]["credential_uuid"]
 	propertyID := fixture.Tables[1].Row[0]["id"]
 
-	token, err := helpers.GenerateAccessToken(userID.(string), credentialUUID.(string))
-	if err != nil {
-		as.NoError(err)
-	}
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
 	req := as.JSON("/api/v1/properties/%s", propertyID.(string))
 	req.Headers = map[string]string{

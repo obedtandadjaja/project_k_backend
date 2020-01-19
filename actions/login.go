@@ -63,7 +63,8 @@ func Login(c buffalo.Context) error {
 		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
 	}
 
-	jwt, err := helpers.GenerateAccessToken(user.ID.String(), user.CredentialUUID.UUID.String())
+	jwt, err := helpers.GenerateAccessToken(user.ID.String(), user.CredentialUUID.UUID.String(),
+		user.Type)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}

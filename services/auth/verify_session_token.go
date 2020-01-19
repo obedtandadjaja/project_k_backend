@@ -18,12 +18,12 @@ type VerifySessionTokenResponse struct {
 func VerifySessionToken(request *VerifySessionTokenRequest) (*VerifySessionTokenResponse, error) {
 	var response VerifySessionTokenResponse
 
-	credentialID, _, err := helpers.VerifySessionToken(request.SessionJwt)
+	claim, err := helpers.VerifySessionToken(request.SessionJwt)
 	if err != nil {
 		return &response, errors.New("Invalid session token")
 	}
 
-	credentialUUID, _ := uuid.FromString(credentialID)
+	credentialUUID, _ := uuid.FromString(claim.CredentialID)
 	response.CredentialID = credentialUUID
 	return &response, nil
 }

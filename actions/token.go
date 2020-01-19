@@ -45,7 +45,8 @@ func Token(c buffalo.Context) error {
 		return c.Error(http.StatusUnauthorized, err)
 	}
 
-	token, err := helpers.GenerateAccessToken(user.ID.String(), res.CredentialID.String())
+	token, err := helpers.GenerateAccessToken(user.ID.String(), res.CredentialID.String(),
+		user.Type)
 	return c.Render(http.StatusCreated, r.JSON(
 		TokenResponse{
 			Jwt: token,
