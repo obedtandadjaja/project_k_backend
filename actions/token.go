@@ -41,7 +41,7 @@ func Token(c buffalo.Context) error {
 	}
 
 	user := &models.User{}
-	if err := tx.Select("id").Where("credential_uuid = ?", res.CredentialID).First(user); err != nil {
+	if err := tx.Select("id", "type").Where("credential_uuid = ?", res.CredentialID).First(user); err != nil {
 		return c.Error(http.StatusUnauthorized, err)
 	}
 

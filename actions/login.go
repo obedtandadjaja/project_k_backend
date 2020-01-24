@@ -47,7 +47,7 @@ func Login(c buffalo.Context) error {
 	}
 
 	user := &models.User{}
-	if err := tx.Select("id", "credential_uuid").Where("email = ?", req.Email).First(user); err != nil {
+	if err := tx.Select("id", "credential_uuid", "type").Where("email = ?", req.Email).First(user); err != nil {
 		return c.Render(http.StatusUnauthorized, r.JSON("Unauthorized"))
 	}
 
