@@ -76,6 +76,7 @@ func (v TenantsResource) Create(c buffalo.Context) error {
 		},
 		Data:                slices.Map{},
 		NotificationMethods: []string{"email"},
+		Type:                models.USER_TENANT,
 	}
 	if err := c.Bind(user); err != nil {
 		return err
