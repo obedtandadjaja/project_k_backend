@@ -71,7 +71,6 @@ func (as *ActionSuite) Test_RoomMaintenanceRequestsResource_Create() {
 	maintenanceRequestToCreate := &models.MaintenanceRequest{
 		Title:       "title",
 		Description: nulls.String{String: "description", Valid: true},
-		Status:      "pending",
 		ReporterID:  helpers.ParseUUID(userID.(string)),
 		RoomID:      nulls.UUID{UUID: helpers.ParseUUID(roomID.(string)), Valid: true},
 	}

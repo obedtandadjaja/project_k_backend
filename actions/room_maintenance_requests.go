@@ -71,6 +71,7 @@ func (v RoomMaintenanceRequestsResource) Create(c buffalo.Context) error {
 		RoomID:     nulls.UUID{UUID: helpers.ParseUUID(c.Param("room_id")), Valid: true},
 		PropertyID: nulls.UUID{UUID: helpers.ParseUUID(c.Param("property_id")), Valid: true},
 		ReporterID: helpers.ParseUUID(c.Value("current_user_id").(string)),
+		Status:     "pending",
 	}
 	if err := c.Bind(maintenanceRequest); err != nil {
 		return err

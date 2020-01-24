@@ -65,6 +65,7 @@ func (v AdminMaintenanceRequestsResource) Show(c buffalo.Context) error {
 func (v AdminMaintenanceRequestsResource) Create(c buffalo.Context) error {
 	maintenanceRequest := &models.MaintenanceRequest{
 		ReporterID: helpers.ParseUUID(c.Value("current_user_id").(string)),
+		Status:     "pending",
 	}
 	if err := c.Bind(maintenanceRequest); err != nil {
 		return err

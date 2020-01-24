@@ -67,7 +67,6 @@ func (as *ActionSuite) Test_PropertyMaintenanceRequestsResource_Create() {
 	maintenanceRequestToCreate := &models.MaintenanceRequest{
 		Title:       "title",
 		Description: nulls.String{String: "description", Valid: true},
-		Status:      "pending",
 		ReporterID:  helpers.ParseUUID(userID.(string)),
 		PropertyID:  nulls.UUID{UUID: helpers.ParseUUID(propertyID.(string)), Valid: true},
 	}

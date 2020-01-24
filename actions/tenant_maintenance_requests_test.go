@@ -65,7 +65,6 @@ func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_CreateRoomMaintena
 	maintenanceRequestToCreate := &models.MaintenanceRequest{
 		Title:       "title",
 		Description: nulls.String{String: "description", Valid: true},
-		Status:      "pending",
 		ReporterID:  helpers.ParseUUID(userID.(string)),
 		RoomID:      nulls.UUID{UUID: helpers.ParseUUID(roomID.(string)), Valid: true},
 		PropertyID:  nulls.UUID{UUID: helpers.ParseUUID(propertyID.(string)), Valid: true},
@@ -101,7 +100,6 @@ func (as *ActionSuite) Test_TenantMaintenanceRequestsResource_CreatePropertyMain
 	maintenanceRequestToCreate := &models.MaintenanceRequest{
 		Title:       "title",
 		Description: nulls.String{String: "description", Valid: true},
-		Status:      "pending",
 		ReporterID:  helpers.ParseUUID(userID.(string)),
 		PropertyID:  nulls.UUID{UUID: helpers.ParseUUID(propertyID.(string)), Valid: true},
 	}

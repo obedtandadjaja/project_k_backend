@@ -72,6 +72,7 @@ func (v PropertyMaintenanceRequestsResource) Create(c buffalo.Context) error {
 	maintenanceRequest := &models.MaintenanceRequest{
 		PropertyID: nulls.UUID{UUID: helpers.ParseUUID(c.Param("property_id")), Valid: true},
 		ReporterID: helpers.ParseUUID(c.Value("current_user_id").(string)),
+		Status:     "pending",
 	}
 	if err := c.Bind(maintenanceRequest); err != nil {
 		return err
