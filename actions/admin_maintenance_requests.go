@@ -26,6 +26,11 @@ func (v AdminMaintenanceRequestsResource) List(c buffalo.Context) error {
 
 	maintenanceRequests := &models.MaintenanceRequests{}
 
+	// query by status if status param is present
+	if c.Param("status") != "" {
+		q.Where("status = ?", c.Param("status"))
+	}
+
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())

@@ -31,6 +31,26 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_List() {
 	as.Equal(1, len(responseBody))
 }
 
+func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithStatusParams() {
+	as.LoadFixture("user with property with maintenance request")
+
+	fixture, _ := fix.Find("user with property with maintenance request")
+
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
+
+	req := as.JSON("/api/v1/maintenance_requests?status=closed")
+	req.Headers = map[string]string{
+		"Authorization": token,
+	}
+	res := req.Get()
+	as.Equal(200, res.Code)
+
+	var responseBody []map[string]interface{}
+	json.NewDecoder(res.Body).Decode(&responseBody)
+
+	as.Equal(0, len(responseBody))
+}
+
 func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_Show() {
 	as.LoadFixture("user with property with maintenance request")
 
