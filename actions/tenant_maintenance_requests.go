@@ -2,6 +2,7 @@ package actions
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
@@ -29,7 +30,7 @@ func (v TenantMaintenanceRequestsResource) List(c buffalo.Context) error {
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).All(maintenanceRequests); err != nil {
+		if err := q.Eager(strings.Split(c.Param("eager"), ",")...).All(maintenanceRequests); err != nil {
 			return err
 		}
 	} else {
@@ -49,7 +50,7 @@ func (v TenantMaintenanceRequestsResource) Show(c buffalo.Context) error {
 	maintenanceRequest := &models.MaintenanceRequest{}
 
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("tenant_maintenance_request_id")); err != nil {
+		if err := q.Eager(strings.Split(c.Param("eager"), ",")...).Find(maintenanceRequest, c.Param("tenant_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {

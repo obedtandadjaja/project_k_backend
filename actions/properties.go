@@ -55,7 +55,7 @@ func (v PropertiesResource) Show(c buffalo.Context) error {
 	property := &models.Property{}
 
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).Find(property, c.Param("property_id")); err != nil {
+		if err := q.Eager(strings.Split(c.Param("eager"), ",")...).Find(property, c.Param("property_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {

@@ -3,6 +3,7 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/nulls"
@@ -34,7 +35,7 @@ func (v PropertyMaintenanceRequestsResource) List(c buffalo.Context) error {
 	// Default values are "page=1" and "per_page=20".
 	q = q.PaginateFromParams(c.Params())
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).All(maintenanceRequests); err != nil {
+		if err := q.Eager(strings.Split(c.Param("eager"), ",")...).All(maintenanceRequests); err != nil {
 			return err
 		}
 	} else {
@@ -56,7 +57,7 @@ func (v PropertyMaintenanceRequestsResource) Show(c buffalo.Context) error {
 	fmt.Println(c.Param("property_maintenance_request_id"))
 
 	if c.Param("eager") != "" {
-		if err := q.Eager(c.Param("eager")).Find(maintenanceRequest, c.Param("property_maintenance_request_id")); err != nil {
+		if err := q.Eager(strings.Split(c.Param("eager"), ",")...).Find(maintenanceRequest, c.Param("property_maintenance_request_id")); err != nil {
 			return c.Error(http.StatusNotFound, err)
 		}
 	} else {
