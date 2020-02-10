@@ -12,9 +12,9 @@ import (
 type UserPropertyRelationship struct {
 	ID         uuid.UUID `json:"id" db:"id"`
 	UserID     uuid.UUID `json:"user_id" db:"user_id"`
-	User       *User     `json:"user,omitempty" belongs_to:"user"`
+	User       User      `json:"user,omitempty" belongs_to:"user"`
 	PropertyID uuid.UUID `json:"property_id" db:"property_id"`
-	Property   *Property `json:"property,omitempty" belongs_to:"property"`
+	Property   Property  `json:"property,omitempty" belongs_to:"property"`
 	Type       string    `json:"type" db:"type"`
 	CreatedAt  time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt  time.Time `json:"updatedAt" db:"updated_at"`

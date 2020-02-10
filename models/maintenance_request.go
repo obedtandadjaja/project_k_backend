@@ -15,7 +15,7 @@ import (
 type MaintenanceRequest struct {
 	ID          uuid.UUID    `json:"id" db:"id"`
 	PropertyID  nulls.UUID   `json:"propertyID,omitempty" db:"property_id"`
-	Property    *Property    `json:"property,omitempty" belongs_to:"property"`
+	Property    Property     `json:"property,omitempty" belongs_to:"property"`
 	RoomID      nulls.UUID   `json:"roomID,omitempty" db:"room_id"`
 	Room        *Room        `json:"room,omitempty" belongs_to:"room"`
 	ReporterID  uuid.UUID    `json:"reporterID,omitempty" db:"reporter_id"`

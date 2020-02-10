@@ -78,7 +78,7 @@ func (v RoomsResource) Show(c buffalo.Context) error {
 
 func (v RoomsResource) Create(c buffalo.Context) error {
 	room := &models.Room{
-		Property: &models.Property{ID: helpers.ParseUUID(c.Param("property_id"))},
+		Property: models.Property{ID: helpers.ParseUUID(c.Param("property_id"))},
 		Data:     slices.Map{},
 	}
 	if err := c.Bind(room); err != nil {

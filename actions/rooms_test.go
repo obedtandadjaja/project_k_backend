@@ -65,7 +65,7 @@ func (as *ActionSuite) Test_RoomsResource_Create() {
 		Name:            "room",
 		PriceAmount:     10000000,
 		PaymentSchedule: "monthly",
-		Property:        &models.Property{ID: helpers.ParseUUID(propertyID.(string))},
+		Property:        models.Property{ID: helpers.ParseUUID(propertyID.(string))},
 	}
 	req := as.JSON("/api/v1/properties/%s/rooms", propertyID.(string))
 	req.Headers = map[string]string{
