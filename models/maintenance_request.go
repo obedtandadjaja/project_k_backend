@@ -17,15 +17,16 @@ type MaintenanceRequest struct {
 	PropertyID  nulls.UUID   `json:"propertyID,omitempty" db:"property_id"`
 	Property    Property     `json:"property,omitempty" belongs_to:"property"`
 	RoomID      nulls.UUID   `json:"roomID,omitempty" db:"room_id"`
-	Room        *Room        `json:"room,omitempty" belongs_to:"room"`
+	Room        Room         `json:"room,omitempty" belongs_to:"room"`
 	ReporterID  uuid.UUID    `json:"reporterID,omitempty" db:"reporter_id"`
-	Reporter    *User        `json:"reporter,omitempty" belongs_to:"user"`
+	Reporter    User         `json:"reporter,omitempty" belongs_to:"user"`
 	Status      string       `json:"status,omitempty" db:"status"`
 	Title       string       `json:"title" db:"title"`
 	Description nulls.String `json:"description" db:"description"`
 	CompletedAt nulls.Time   `json:"completedAt" db:"completed_at"`
 	CreatedAt   time.Time    `json:"createdAt" db:"created_at"`
 	UpdatedAt   time.Time    `json:"updatedAt" db:"updated_at"`
+	Category    nulls.String `json:"category" db:"category"`
 }
 
 // String is not required by pop and may be deleted

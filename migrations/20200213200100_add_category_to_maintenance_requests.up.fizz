@@ -1,0 +1,1 @@
+add_column("maintenance_requests", "category", "string", {null: true})

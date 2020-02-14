@@ -78,7 +78,8 @@ CREATE TABLE public.maintenance_requests (
     description character varying(255),
     completed_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    category character varying(255)
 );
 
 

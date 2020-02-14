@@ -337,6 +337,7 @@
       status = "pending"
       title = "title"
       description = "description"
+      category = "furniture"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
 
@@ -426,6 +427,7 @@
       status = "pending"
       title = "title"
       description = "description"
+      category = "furniture"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
 
@@ -468,6 +470,7 @@
       status = "pending"
       title = "title"
       description = "description"
+      category = "furniture"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
 
@@ -586,5 +589,6 @@
       status = "pending"
       title = "title"
       description = "description"
+      category = "furniture"
       created_at = "<%= now() %>"
       updated_at = "<%= now() %>"
