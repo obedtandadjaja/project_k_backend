@@ -2,6 +2,7 @@ package actions
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/suite/fix"
@@ -31,14 +32,37 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_List() {
 	as.Equal(1, len(responseBody))
 }
 
+// TODO(obedt): This is not the cleanest way to test. We are only testing negative test
+//              cases here. We should be adding positive test cases. The naming of the
+//              test helper should also be changed to something more clear.
 func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithStatusParams() {
+	CheckAdminMaintenanceRequestResourceCount(as, 0, "status=closed")
+}
+
+func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithPropertyIDParams() {
+	CheckAdminMaintenanceRequestResourceCount(as, 0, "property_id=8f255a27-fdfc-48a6-8092-d9db6d9347d7")
+}
+
+func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithRoomIDParams() {
+	CheckAdminMaintenanceRequestResourceCount(as, 0, "room_id=8f255a27-fdfc-48a6-8092-d9db6d9347d7")
+}
+
+func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithOpenedStartDateParams() {
+	CheckAdminMaintenanceRequestResourceCount(as, 0, "opened_start_date=2050-01-01")
+}
+
+func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithClosedStartDateParams() {
+	CheckAdminMaintenanceRequestResourceCount(as, 0, "closed_start_date=1970-01-01")
+}
+
+func CheckAdminMaintenanceRequestResourceCount(as *ActionSuite, count int, params ...string) {
 	as.LoadFixture("user with property with maintenance request")
 
 	fixture, _ := fix.Find("user with property with maintenance request")
 
 	token := AccessTokenHelper(fixture.Tables[0].Row[0])
 
-	req := as.JSON("/api/v1/maintenance_requests?status=closed")
+	req := as.JSON("/api/v1/maintenance_requests?" + strings.Join(params, "&"))
 	req.Headers = map[string]string{
 		"Authorization": token,
 	}
@@ -48,7 +72,7 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_ListWithStatusParam
 	var responseBody []map[string]interface{}
 	json.NewDecoder(res.Body).Decode(&responseBody)
 
-	as.Equal(0, len(responseBody))
+	as.Equal(count, len(responseBody))
 }
 
 func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_Show() {

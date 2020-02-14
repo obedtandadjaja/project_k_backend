@@ -27,9 +27,38 @@ func (v AdminMaintenanceRequestsResource) List(c buffalo.Context) error {
 
 	maintenanceRequests := &models.MaintenanceRequests{}
 
-	// query by status if status param is present
 	if c.Param("status") != "" {
 		q.Where("status = ?", c.Param("status"))
+	}
+
+	if c.Param("category") != "" {
+		q.Where("category = ?", c.Param("category"))
+	}
+
+	if c.Param("property_id") != "" {
+		q.Where("maintenance_requests.property_id = ?", c.Param("property_id"))
+	}
+
+	if c.Param("room_id") != "" {
+		q.Where("maintenance_requests.room_id = ?", c.Param("room_id"))
+	}
+
+	if c.Param("opened_start_date") != "" {
+		q.Where("maintenance_requests.created_at >= ?", c.Param("opened_start_date"))
+	}
+
+	if c.Param("opened_end_date") != "" {
+		q.Where("maintenance_requests.created_at <= ?", c.Param("opened_end_date"))
+	}
+
+	if c.Param("closed_start_date") != "" {
+		q.Where("maintenance_requests.updated_at >= ? AND status='closed'",
+			c.Param("closed_start_date"))
+	}
+
+	if c.Param("closed_end_date") != "" {
+		q.Where("maintenance_requests.updated_at <= ? AND status='closed'",
+			c.Param("closed_end_date"))
 	}
 
 	// Paginate results. Params "page" and "per_page" control pagination.
