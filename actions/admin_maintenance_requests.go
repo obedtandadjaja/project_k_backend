@@ -3,9 +3,12 @@ package actions
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/nulls"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/validate"
 	"github.com/obedtandadjaja/project_k_backend/helpers"
 	"github.com/obedtandadjaja/project_k_backend/models"
 )
@@ -183,6 +186,37 @@ func (v AdminMaintenanceRequestsResource) Destroy(c buffalo.Context) error {
 
 	if err := tx.Destroy(maintenanceRequest); err != nil {
 		return err
+	}
+
+	return c.Render(http.StatusOK, r.JSON(maintenanceRequest))
+}
+
+func (v AdminMaintenanceRequestsResource) Complete(c buffalo.Context) error {
+	tx, q := v.getTransactionAndQueryContext(c)
+
+	maintenanceRequest := &models.MaintenanceRequest{}
+	if err := q.Find(maintenanceRequest, c.Param("admin_maintenance_request_id")); err != nil {
+		return c.Error(http.StatusNotFound, err)
+	}
+
+	if maintenanceRequest.Status != "pending" {
+		verrs := validate.NewErrors()
+		verrs.Add("status", "Status must be pending")
+		return c.Render(http.StatusUnprocessableEntity, r.JSON(verrs))
+	}
+
+	maintenanceRequest.Status = "closed"
+	maintenanceRequest.CompletedAt = nulls.Time{Time: time.Now(), Valid: true}
+
+	verrs, err := tx.ValidateAndUpdate(maintenanceRequest)
+	if err != nil {
+		return err
+	}
+
+	if verrs.HasAny() {
+		c.Set("errors", verrs)
+
+		return c.Render(http.StatusUnprocessableEntity, r.JSON(maintenanceRequest))
 	}
 
 	return c.Render(http.StatusOK, r.JSON(maintenanceRequest))

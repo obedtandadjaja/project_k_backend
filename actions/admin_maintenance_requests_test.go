@@ -222,3 +222,25 @@ func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_Destroy() {
 
 	as.NotNil(err)
 }
+
+func (as *ActionSuite) Test_AdminMaintenanceRequestsResource_CompleteMaintenanceRequest() {
+	as.LoadFixture("user with property with maintenance request")
+
+	fixture, _ := fix.Find("user with property with maintenance request")
+	maintenanceRequestID := fixture.Tables[3].Row[0]["id"]
+
+	token := AccessTokenHelper(fixture.Tables[0].Row[0])
+
+	req := as.JSON("/api/v1/maintenance_requests/%s/complete", maintenanceRequestID.(string))
+	req.Headers = map[string]string{
+		"Authorization": token,
+	}
+	res := req.Post("")
+	as.Equal(200, res.Code)
+
+	var responseBody map[string]interface{}
+	json.NewDecoder(res.Body).Decode(&responseBody)
+
+	as.Equal("closed", responseBody["status"])
+	as.NotNil(responseBody["completedAt"])
+}

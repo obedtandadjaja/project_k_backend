@@ -76,13 +76,12 @@ func App() *buffalo.App {
 		admin.Resource("/v1/properties/{property_id}/rooms", RoomsResource{})
 		admin.POST("/v1/properties/{property_id}/rooms/batch", RoomsResource{}.BatchCreate)
 		admin.Resource("/v1/properties/{property_id}/rooms/{room_id}/tenants", TenantsResource{})
-		admin.Resource("/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments",
+		admin.Resource(
+			"/v1/properties/{property_id}/rooms/{room_id}/tenants/{tenant_id}/payments",
 			PaymentsResource{})
-		admin.Resource("/v1/properties/{property_id}/maintenance_requests",
-			PropertyMaintenanceRequestsResource{})
-		admin.Resource("/v1/properties/{property_id}/rooms/{room_id}/maintenance_requests",
-			RoomMaintenanceRequestsResource{})
 		admin.Resource("/v1/maintenance_requests", AdminMaintenanceRequestsResource{})
+		admin.POST("/v1/maintenance_requests/{admin_maintenance_request_id}/complete",
+			AdminMaintenanceRequestsResource{}.Complete)
 
 		// tenant specific endpoints
 		tenant := app.Group("/api/tenant")
