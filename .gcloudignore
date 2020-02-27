@@ -1,0 +1,33 @@
+# GCloud / Git
+.gcloudignore
+.git
+.gitignore
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Logs and misc editors
+**/*.log
+**/*.sqlite
+.idea/
+.vscode/
+
+# Buffalo specific ignores
+bin/
+tmp/
+node_modules/
+.sass-cache/
+.grifter/
+
+# App's binary filename - change to yours
+project_k_backend

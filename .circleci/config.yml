@@ -95,6 +95,21 @@ jobs:
             template=`cat "k8/deployment.yaml" | sed "s/{{IMAGE_TAG}}/$CIRCLE_SHA1/g" | sed "s/{{ENV}}/$DEPLOYMENT_SUFFIX/g"`
             echo "$template" | kubectl apply -f -
 
+  app_engine_deploy:
+    docker:
+      - image: google/cloud-sdk:alpine
+    working_directory: /go/src/github.com/obedtandadjaja/project-k-backend
+    steps:
+      - checkout
+      - run:
+          name: Deploy current commit on this branch to App Engine
+          command: |
+            echo "MAILGUN_API_KEY=\"${MAILGUN_API_KEY}\"" >> .env
+            echo "DB_PASSWORD=\"${DB_PASSWORD}\"" >> .env
+            echo "SECRET_KEY=\"${SECRET_KEY}\"" >> .env
+
+            gcloud app deploy
+
 # all workflows are only valid on master
 workflows:
   version: 2

@@ -1,0 +1,17 @@
+runtime: go111
+
+#[START env_variables]
+env_variables:
+  ENV: 'production'
+  GO_ENV: 'production'
+  DB_HOST: '/cloudsql/gampangdeh:asia-southeast1:gampangdeh-prod'
+  DB_USER: 'postgres'
+  DB_NAME: 'gampangdeh-prod'
+  DB_POOL: '5'
+  APP_HOST: ''
+  APP_PORT: '3000'
+#[ENV env_variables]
+
+handlers:
+- url: /.*
+  script: auto
