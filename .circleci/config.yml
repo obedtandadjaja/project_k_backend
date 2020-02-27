@@ -41,7 +41,7 @@ jobs:
           paths:
             - "/go/pkg/mod"
 
-      - run: soda migrate
+      - run: soda migrate --env=test
       - run: make test
 
   docker_push:
