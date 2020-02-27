@@ -114,7 +114,7 @@ jobs:
 
             echo "${GAE_CD_SERVICE_ACCOUNT_KEY}" > .key.json
             gcloud auth activate-service-account --key-file .key.json
-            gcloud set project "${GCP_PROJECT_ID}"
+            gcloud config set project "${GCP_PROJECT_ID}"
 
             gcloud app deploy
 
