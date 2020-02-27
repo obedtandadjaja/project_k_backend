@@ -108,6 +108,10 @@ jobs:
             echo "DB_PASSWORD=\"${DB_PASSWORD}\"" >> .env
             echo "SECRET_KEY=\"${SECRET_KEY}\"" >> .env
 
+            echo "${GAE_CD_SERVICE_ACCOUNT_KEY}" > .key.json
+            gcloud auth activate-service-account --key-file .key.json
+            gcloud set project "${GCP_PROJECT_ID}"
+
             gcloud app deploy
 
 # all workflows are only valid on master
