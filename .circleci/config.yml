@@ -34,12 +34,14 @@ jobs:
 
       - run: go mod download
       - run: go mod vendor
+      - run: go install github.com/gobuffalo/pop/soda
 
       - save_cache:
           key: go-mod-v1-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
 
+      - run: soda migrate
       - run: make test
 
   docker_push:
@@ -124,17 +126,10 @@ workflows:
             branches:
               only:
                 - master
-      - docker_push:
+      - app_engine_deploy:
           filters:
             branches:
               only:
                 - master
           requires:
             - build_and_test
-      - kubernetes_deploy:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - docker_push
