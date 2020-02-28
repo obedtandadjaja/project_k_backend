@@ -110,7 +110,7 @@ jobs:
           name: Deploy current commit on this branch to App Engine
           command: |
             echo "MAILGUN_API_KEY=\"${MAILGUN_API_KEY}\"" > .env
-            echo "DB_PASSWORD=\"${DB_PASSWORD}\"" >> .env
+            echo "DATABASE_URL=\"${DATABASE_URL}\"" >> .env
             echo "SECRET_KEY=\"${SECRET_KEY}\"" >> .env
 
             echo "${GAE_CD_SERVICE_ACCOUNT_KEY}" > .key.json
