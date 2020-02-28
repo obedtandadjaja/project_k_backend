@@ -81,6 +81,8 @@ jobs:
     working_directory: /go/src/github.com/obedtandadjaja/project-k-backend
     steps:
       - checkout
+      - run: go mod download
+      - run: go mod vendor
       - run:
           name: Deploy the current commit on this branch to the GKE cluster
           command: |
