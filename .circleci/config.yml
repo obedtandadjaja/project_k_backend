@@ -104,7 +104,6 @@ jobs:
   app_engine_deploy:
     docker:
       - image: google/cloud-sdk:alpine
-    working_directory: /go/src/github.com/obedtandadjaja/project-k-backend
     steps:
       - checkout
       - run:
