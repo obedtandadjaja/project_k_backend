@@ -17,6 +17,8 @@ test:
 
 stage:
   url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/project_k_backend_stg"}}
+  dialect: postgres
 
 production:
   url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/project_k_backend"}}
+  dialect: postgres
