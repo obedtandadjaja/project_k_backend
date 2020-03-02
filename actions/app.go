@@ -43,6 +43,13 @@ func App() *buffalo.App {
 				AllowedHeaders:   []string{"Content-Type", "Cookie", "Authorization"},
 				AllowCredentials: true,
 			}).Handler}
+		} else {
+			app.PreWares = []buffalo.PreWare{cors.New(cors.Options{
+				AllowedOrigins:   []string{"https://react-frontend-dot-gampangdeh.appspot.com"},
+				AllowedMethods:   []string{"OPTIONS", "GET", "POST", "PUT", "DELETE"},
+				AllowedHeaders:   []string{"Content-Type", "Cookie", "Authorization"},
+				AllowCredentials: true,
+			}).Handler}
 		}
 
 		// Not turning this on since we do SSL termination at Load Balancer level
