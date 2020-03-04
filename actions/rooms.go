@@ -114,7 +114,7 @@ func (v RoomsResource) Create(c buffalo.Context) error {
 }
 
 func (v RoomsResource) BatchCreate(c buffalo.Context) error {
-	req := BatchCreateRooms{Data: slices.Map{}}
+	req := &BatchCreateRooms{Data: slices.Map{}}
 	if err := c.Bind(req); err != nil {
 		return err
 	}
@@ -136,10 +136,11 @@ func (v RoomsResource) BatchCreate(c buffalo.Context) error {
 	for i := 0; i < req.Quantity; i++ {
 		rooms[i] = models.Room{
 			PropertyID:      helpers.ParseUUID(c.Param("property_id")),
-			Name:            fmt.Sprintf("Room %d", i+1),
+			Name:            fmt.Sprintf("%s - Room %d", req.Type, i+1),
 			PriceAmount:     req.PriceAmount,
 			PaymentSchedule: req.PaymentSchedule,
 			Data:            req.Data,
+			Type:            req.Type,
 		}
 		tx.Create(&rooms[i])
 	}
