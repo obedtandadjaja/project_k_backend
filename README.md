@@ -10,6 +10,8 @@ If I were to redo this project all over again, I would probably still use Go as 
 
 Anyway, the project ended in March 2020 since we did not find traction in demand of the product. Feel free to use this code or use it as an example project to learn more about Gobuffalo :)
 
+Link to the front-end React project: https://github.com/obedtandadjaja/project-k-react
+
 ## Database Setup
 
 It looks like you chose to set up your application using a database! Fantastic!
